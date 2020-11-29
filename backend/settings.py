@@ -32,6 +32,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,6 +44,8 @@ INSTALLED_APPS = [
     'djoser',
     'rest_framework.authtoken',
     'django_filters',
+    'users',
+    
 ]
 
 MIDDLEWARE = [
@@ -132,6 +136,8 @@ DJOSER = {
 
 
 }
+
+AUTH_USER_MODEL = 'users.Account'
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'

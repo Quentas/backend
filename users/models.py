@@ -9,3 +9,14 @@ class Account(AbstractUser):  #check for other fields
 
 	class Meta:
 		verbose_name = 'Account'	
+
+class Post(models.Model):
+	user = models.ForeignKey(Account, on_delete=models.CASCADE)
+	content = models.TextField('content', max_length=400)
+	date = models.DateTimeField(auto_now=True)
+	
+	def recently_published():
+		return self.date >= (timezone.now() - datetime.timedelta(days = 1))
+
+	def __str__(self):
+		return self.content

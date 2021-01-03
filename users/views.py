@@ -1,8 +1,5 @@
 from django.shortcuts import render
-
-# Create your views here.
-
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 #from knox.models import AuthToken   
@@ -10,8 +7,7 @@ from .models import Post
 from .serializers import UserSerializer, RegisterSerializer, PostSerializer
 
 
-
-# Register API
+'''             
 class RegisterAPI(generics.GenericAPIView):
     serializer_class = RegisterSerializer
 
@@ -24,10 +20,27 @@ class RegisterAPI(generics.GenericAPIView):
         "token": AuthToken.objects.create(user)[1]							###########################
         })
 
-class PostListView(APIView):
-    
-    def get(self, request):
-        posts = Post.objects.order_by("-date")
-        serializer = PostSerializer(posts, many = True)
+'''
+
+class PostListView(viewsets.ViewSet):
+
+    def list(self, request):
+        queryset = Post.objects.all().order_by("-date")
+        serializer = PostSerializer(queryset, many = True)
+        return Response(serializer.data)
+
+    def retrieve_user_id(self, request, pk=None):
+        queryset = Post.objects.filter(user=pk).order_by("-date")
+        serializer = PostSerializer(queryset, many = True)
+        return Response(serializer.data)
+
+    def retrieve_username(self, request, username=None):
+        queryset = Post.objects.filter(user=username).order_by("-date")
+        serializer = PostSerializer(queryset, many = True)
+        return Response(serializer.data)
+
+    def retrieve_post(self, request, pk=None):
+        queryset = Post.objects.filter(id=pk).order_by("-date")
+        serializer = PostSerializer(queryset, many = True)
         return Response(serializer.data)
 

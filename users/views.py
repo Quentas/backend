@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import HttpRequest
 from rest_framework import generics, permissions, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -25,22 +26,16 @@ class RegisterAPI(generics.GenericAPIView):
 class PostListView(viewsets.ViewSet):
 
     def list(self, request):
-        queryset = Post.objects.all().order_by("-date")
-        serializer = PostSerializer(queryset, many = True)
+        if request.GET.get('user_id'):
+            user_id = request.GET.get('user_id')
+            queryset = Post.objects.filter(user__id=user_id)
+        elif request.GET.get('username'):
+            username = request.GET.get('username')            
+            queryset = Post.objects.filter(user__username=username)
+        elif request.GET.get('post_id'):
+            post_id = request.GET.get('post_id')            
+            queryset = Post.objects.filter(id=post_id)
+        else:
+            queryset = Post.objects.all()
+        serializer = PostSerializer(queryset.order_by("-date"), many = True)
         return Response(serializer.data)
-
-    def retrieve_user_id(self, request, pk=None):
-        queryset = Post.objects.filter(user=pk).order_by("-date")
-        serializer = PostSerializer(queryset, many = True)
-        return Response(serializer.data)
-
-    def retrieve_username(self, request, username=None):
-        queryset = Post.objects.filter(user=username).order_by("-date")
-        serializer = PostSerializer(queryset, many = True)
-        return Response(serializer.data)
-
-    def retrieve_post(self, request, pk=None):
-        queryset = Post.objects.filter(id=pk).order_by("-date")
-        serializer = PostSerializer(queryset, many = True)
-        return Response(serializer.data)
-

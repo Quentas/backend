@@ -16,8 +16,23 @@ class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         model.date = serializers.DateTimeField()
-        fields = ["content"]
-
+        fields = ["post", "content"]
+'''
+        Request be like:
+        {
+            "post": post_id,
+            "content" : "smth"
+        }
+        
+        And answer be like:
+        {
+            "id": <comment_id>,
+            "post": <post_id>,
+            "user": <username, who requested>,
+            "content": "smth",
+            "date": <post_date>
+        }
+    '''
 
 class PostSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True)
@@ -32,8 +47,7 @@ class PostCreateSerializer(serializers.ModelSerializer):
         model = Post
         model.date = serializers.DateTimeField() 
         fields = ["content"]
-        '''
-    [
+'''
         Request be like:
         {
             "content" : "smth"
@@ -46,5 +60,4 @@ class PostCreateSerializer(serializers.ModelSerializer):
             "content": "smth",
             "date": <post_date>
         }
-    ]
-        '''
+    '''

@@ -1,4 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import (
+    render,
+    get_object_or_404,
+)
 from django.http import HttpRequest
 from django.contrib.auth import login
 
@@ -59,20 +62,13 @@ class PostCreateView(APIView):
 
 
 class CommentCreateView(APIView):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated,]
 
-    def post(self, request, post_id):
-        '''
-        try:
-		    post = Post.objects.get(id = post_id)
-	    except:
-		    return Response(status=404)
-        '''    
+    def post(self, request):
         created_comment = CommentCreateSerializer(data=request.data)
+        post_instance = get_object_or_404(Post, id=int(request.data["post"]))
         if created_comment.is_valid():
-           # created_comment.post = post
-            created_comment.save(user=request.user)
+            created_comment.save(user=request.user, post=post_instance)
             return Response(status=201)
         else:
             return Response(status=400)
-

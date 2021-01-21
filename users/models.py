@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 
-class Account(AbstractUser):  #check for other fields
+class Account(AbstractUser):  
 	email = models.EmailField(unique=True, blank=False)
 	profile_photo = models.ImageField(upload_to='profile_images', blank=True)
 

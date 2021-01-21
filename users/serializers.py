@@ -2,24 +2,38 @@ from rest_framework import serializers
 from .models import (
     Account, 
     Post,
+    Comment,
 )
 
 
-class PostSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(slug_field="username", read_only=True)
+class CommentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Post
+        model = Comment
         fields = ("id", "user", "content", "date")
 
 
-class PostCreateSerializer(serializers.ModelSerializer): #change fields
+class CommentCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        model.date = serializers.DateTimeField()
+        fields = ["content"]
+
+
+class PostSerializer(serializers.ModelSerializer):
+    comments = CommentSerializer(many=True)
+    user = serializers.SlugRelatedField(slug_field="username", read_only=True)
     class Meta:
         model = Post
-        #fields = "__all__"
-        model.date = serializers.DateTimeField()  #this works
-        #fields = ["id", "user", "content"]
+        fields = ("id", "user", "content", "date", "comments")
+
+
+class PostCreateSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = Post
+        model.date = serializers.DateTimeField() 
         fields = ["content"]
         '''
+    [
         Request be like:
         {
             "content" : "smth"
@@ -32,5 +46,5 @@ class PostCreateSerializer(serializers.ModelSerializer): #change fields
             "content": "smth",
             "date": <post_date>
         }
-
+    ]
         '''

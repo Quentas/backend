@@ -20,6 +20,7 @@ from .models import Post
 from .serializers import (
     PostSerializer, 
     PostCreateSerializer,
+    CommentCreateSerializer
 )
 
 
@@ -52,6 +53,25 @@ class PostCreateView(APIView):
         created_post = PostCreateSerializer(data=request.data)
         if created_post.is_valid():
             created_post.save(user=request.user)
+            return Response(status=201)
+        else:
+            return Response(status=400)
+
+
+class CommentCreateView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request, post_id):
+        '''
+        try:
+		    post = Post.objects.get(id = post_id)
+	    except:
+		    return Response(status=404)
+        '''    
+        created_comment = CommentCreateSerializer(data=request.data)
+        if created_comment.is_valid():
+           # created_comment.post = post
+            created_comment.save(user=request.user)
             return Response(status=201)
         else:
             return Response(status=400)

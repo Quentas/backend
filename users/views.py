@@ -19,7 +19,7 @@ from rest_framework.permissions import (
 from rest_framework.views import APIView
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 
-from .models import Post
+from .models import Post, Comment
 from .serializers import (
     PostSerializer, 
     PostCreateSerializer,
@@ -61,6 +61,30 @@ class PostCreateView(APIView):
             return Response(status=400)
 
 
+class PostDeleteView(APIView):
+    permission_classes = [IsAuthenticated,]
+
+    def delete(self, request):
+        post = get_object_or_404(Post, id=int(request.data["id"]))
+        if request.user == post.user:
+            post.delete()
+            return Response(status=200)
+        else:
+            return Response(status=400)
+
+class PostUpdateView(APIView):
+    permission_classes = [IsAuthenticated,]
+
+    def put(self, request):
+        post = get_object_or_404(Post, id=int(request.data["id"]))
+        if request.user == post.user:
+            post.content = request.data["content"]
+            post.save()
+            return Response(status=200)
+        else:
+            return Response(status=400)
+
+
 class CommentCreateView(APIView):
     permission_classes = [IsAuthenticated,]
 
@@ -70,5 +94,29 @@ class CommentCreateView(APIView):
         if created_comment.is_valid():
             created_comment.save(user=request.user, post=post_instance)
             return Response(status=201)
+        else:
+            return Response(status=400)
+
+
+class CommentDeleteView(APIView):
+    permission_classes = [IsAuthenticated,]
+
+    def delete(self, request):
+        comment = get_object_or_404(Comment, id=int(request.data["id"]))
+        if request.user == comment.user:
+            comment.delete()
+            return Response(status=200)
+        else:
+            return Response(status=400)
+
+class CommentUpdateView(APIView):
+    permission_classes = [IsAuthenticated,]
+
+    def put(self, request):
+        comment = get_object_or_404(Comment, id=int(request.data["id"]))
+        if request.user == comment.user:
+            comment.content = request.data["content"]
+            comment.save()
+            return Response(status=200)
         else:
             return Response(status=400)

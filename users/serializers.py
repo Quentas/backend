@@ -9,7 +9,7 @@ from .models import (
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ("id", "user", "content", "date")
+        fields = '__all__'
 
 
 class CommentCreateSerializer(serializers.ModelSerializer):

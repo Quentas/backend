@@ -13,6 +13,7 @@ from pathlib import Path
 import os, sys
 from datetime import timedelta
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -130,7 +131,9 @@ DJOSER = {
     'USERNAME_RESET_CONFIRM_URL' : '#/username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL' : '#/activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL' : True,
-    'SERIALIZERS' : {},
+    'SERIALIZERS' : {
+        'current_user' : 'users.serializers.PartialUserSerializer',
+    },
 
 
 }

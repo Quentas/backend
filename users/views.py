@@ -33,16 +33,16 @@ class PostViewSet(viewsets.ViewSet):
 
     def list(self, request):
         self.permission_classes = [AllowAny, ]
+        # /posts/?user_id=1
         if request.GET.get('user_id'):                                  
-            # http://127.0.0.1:8000/api/v1/posts/?user_id=1
             user_id = request.GET.get('user_id')
             queryset = Post.objects.filter(user__id=user_id)
+        # /posts/?username=admin
         elif request.GET.get('username'):                               
-            # http://127.0.0.1:8000/api/v1/posts/?username=admin
             username = request.GET.get('username')            
             queryset = Post.objects.filter(user__username=username)
+        # /posts/?post_id=1
         elif request.GET.get('post_id'):                                
-            # http://127.0.0.1:8000/api/v1/posts/?post_id=1
             post_id = request.GET.get('post_id')            
             queryset = Post.objects.filter(id=post_id)
         else:
@@ -86,16 +86,16 @@ class CommentViewSet(viewsets.ViewSet):
 
     def list(self, request):
         self.permission_classes = [AllowAny,]
+        # /comments/?user_id=1
         if request.GET.get('user_id'):                                  
-            # http://127.0.0.1:8000/api/v1/comments/?user_id=1
             user_id = request.GET.get('user_id')
             queryset = Comment.objects.filter(user__id=user_id)
+        # /comments/?username=admin
         elif request.GET.get('username'):                               
-            # http://127.0.0.1:8000/api/v1/comments/?username=admin
             username = request.GET.get('username')            
             queryset = Comment.objects.filter(user__username=username)
+        # /comments/?comment_id=1
         elif request.GET.get('comment_id'):                                
-            # http://127.0.0.1:8000/api/v1/comments/?comment_id=1
             comment_id = request.GET.get('comment_id')            
             queryset = Comment.objects.filter(id=comment_id)
         else:

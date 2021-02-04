@@ -61,3 +61,14 @@ class PostCreateSerializer(serializers.ModelSerializer):
             "date": <post_date>
         }
     '''
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = '__all__'
+
+class PartialUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ['id', 'username', 'first_name', 'last_name',
+                 'is_active', 'is_staff', 'email', 'profile_photo', ]

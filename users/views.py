@@ -1,3 +1,4 @@
+import pathlib
 from django.shortcuts import (
     render,
     get_object_or_404,
@@ -20,19 +21,24 @@ from rest_framework.permissions import (
 from rest_framework.views import APIView
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 
-from .models import Post, Comment
+from .models import (
+    Post, 
+    Comment, 
+    Account,
+)
 from .serializers import (
     PostSerializer, 
     PostCreateSerializer,
     CommentCreateSerializer,
     CommentSerializer,
+    FileUploadSerializer,
 )
 
 
 class PostViewSet(viewsets.ViewSet):
 
     def list(self, request):
-        self.permission_classes = [AllowAny, ]
+        self.permission_classes = [AllowAny,]
         # /posts/?user_id=1
         if request.GET.get('user_id'):                                  
             user_id = request.GET.get('user_id')
@@ -131,3 +137,17 @@ class CommentViewSet(viewsets.ViewSet):
             return Response(status=200)
         else:
             return Response(status=403)
+
+
+class UploadViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated,]
+    serializer_class = FileUploadSerializer
+    def create(self, request):
+        file_uploaded = request.FILES.get('photo')
+        file_extension = pathlib.Path(str(file_uploaded)).suffix
+        user_instance = Account.objects.get(username=request.user)
+        if file_extension in {'.jpg', '.jpeg', '.png'}:
+            user_instance.profile_photo = file_uploaded
+            user_instance.save()
+            return Response(status=200)
+        return Response(status=400)

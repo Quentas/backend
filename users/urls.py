@@ -2,6 +2,7 @@ from django.urls import path
 from .views import (
     PostViewSet,
     CommentViewSet,
+    UploadViewSet,
 )
 
 urlpatterns = [
@@ -19,5 +20,8 @@ urlpatterns = [
             'put': 'partial_update',
             'delete': 'destroy'
         })),
-
+    path("profile_photo/", UploadViewSet.as_view(
+        {
+            'post': 'create',
+        })),
 ]

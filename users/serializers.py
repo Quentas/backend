@@ -72,3 +72,8 @@ class PartialUserSerializer(serializers.ModelSerializer):
         model = Account
         fields = ['id', 'username', 'first_name', 'last_name',
                  'is_active', 'is_staff', 'email', 'profile_photo', ]
+
+class FileUploadSerializer(serializers.Serializer):
+    file_uploaded = serializers.FileField()
+    class Meta:
+        fields = ['file_uploaded']

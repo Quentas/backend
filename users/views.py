@@ -1,4 +1,4 @@
-import pathlib
+from pathlib import Path
 from django.shortcuts import (
     render,
     get_object_or_404,
@@ -144,10 +144,11 @@ class UploadViewSet(viewsets.ViewSet):
     serializer_class = FileUploadSerializer
     def create(self, request):
         file_uploaded = request.FILES.get('photo')
-        file_extension = pathlib.Path(str(file_uploaded)).suffix
-        user_instance = Account.objects.get(username=request.user)
+        file_extension = Path(str(file_uploaded)).suffix
+        #file_size = Path(str(file_uploaded)).stat().st_size()
+        #print(file_size)
         if file_extension in {'.jpg', '.jpeg', '.png'}:
-            user_instance.profile_photo = file_uploaded
-            user_instance.save()
+            request.user.profile_photo = file_uploaded
+            request.user.save()
             return Response(status=200)
         return Response(status=400)

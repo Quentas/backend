@@ -1,6 +1,6 @@
 from django.db import models
-
 from django.contrib.auth.models import AbstractUser
+from PIL import Image
 
 
 class Account(AbstractUser):  
@@ -9,6 +9,16 @@ class Account(AbstractUser):
 
 	class Meta:
 		verbose_name = 'Account'	
+	
+	def save(self, *args, **kwargs):
+		# Resizing profile image
+		super().save(*args, **kwargs)
+		img = Image.open(self.profile_photo.path)
+		if img.height > 200 or img.width > 200:	
+			output_size = (200, 200)
+			img.thumbnail(output_size)
+			img.save(self.profile_photo.path)
+	
 
 
 class Post(models.Model):

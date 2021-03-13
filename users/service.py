@@ -12,4 +12,3 @@ class PostFilter(filters.FilterSet):
         model = Post
         fields = ['user']
 
-

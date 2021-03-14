@@ -53,7 +53,7 @@ class PostViewSet(viewsets.ViewSet):
             queryset = Post.objects.filter(id=post_id)
         else:
             queryset = Post.objects.all()
-        serializer = PostSerializer(queryset.order_by("-date"), many = True)
+        serializer = PostSerializer(queryset.order_by("-date"), many=True)
         return Response(serializer.data)
 
     def create(self, request):
@@ -104,9 +104,13 @@ class CommentViewSet(viewsets.ViewSet):
         elif request.GET.get('comment_id'):                                
             comment_id = request.GET.get('comment_id')            
             queryset = Comment.objects.filter(id=comment_id)
+        # /comments/?post_id=1
+        elif request.GET.get('post_id'):                                
+            post_id = request.GET.get('post_id')            
+            queryset = Comment.objects.filter(post=post_id)
         else:
             queryset = Comment.objects.all()
-        serializer = CommentSerializer(queryset.order_by("-date"), many = True)
+        serializer = CommentSerializer(queryset.order_by("-date"), many=True)
         return Response(serializer.data)
 
     def create(self, request):
@@ -145,8 +149,6 @@ class UploadViewSet(viewsets.ViewSet):
     def create(self, request):
         file_uploaded = request.FILES.get('photo')
         file_extension = Path(str(file_uploaded)).suffix
-        #file_size = Path(str(file_uploaded)).stat().st_size()
-        #print(file_size)
         if file_extension in {'.jpg', '.jpeg', '.png'}:
             request.user.profile_photo = file_uploaded
             request.user.save()

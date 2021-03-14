@@ -40,7 +40,13 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ("id", "user", "content", "date", "comments")
-
+        
+'''
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ("id", "user", "content", "date")
+'''
 
 class PostCreateSerializer(serializers.ModelSerializer): 
     class Meta:

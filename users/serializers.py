@@ -33,7 +33,7 @@ class CommentCreateSerializer(serializers.ModelSerializer):
             "date": <post_date>
         }
     '''
-
+'''
 class PostSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True)
     user = serializers.SlugRelatedField(slug_field="username", read_only=True)
@@ -45,8 +45,8 @@ class PostSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ("id", "user", "content", "date")
-'''
+        fields = ("id", "user", "content", "date", "last_edited")
+#'''
 
 class PostCreateSerializer(serializers.ModelSerializer): 
     class Meta:

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'users',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -56,9 +57,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
+
+#DATETIME_FORMAT = 'N j, Y, P'
+
+ALLOWED_HOSTS=['*']
+CORS_ORIGIN_ALLOW_ALL = True
 
 TEMPLATES = [
     {
@@ -133,7 +140,12 @@ DJOSER = {
     'SEND_ACTIVATION_EMAIL' : True,
     'SERIALIZERS' : {
         'current_user' : 'users.serializers.PartialUserSerializer',
+        'user' : 'users.serializers.PartialUserSerializer',
     },
+    'HIDE_USERS': False,
+    'PERMISSIONS': {
+        'user': ['rest_framework.permissions.AllowAny'],
+    }
 
 
 }

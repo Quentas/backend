@@ -1,4 +1,5 @@
 from pathlib import Path
+import requests
 from django.shortcuts import (
     render,
     get_object_or_404,
@@ -79,6 +80,9 @@ class PostViewSet(viewsets.ViewSet):
             return Response(status=403)
 
     def destroy(self, request):
+        # destroy by
+            # id
+            # user
         self.permission_classes = [IsAuthenticated,]
         post = get_object_or_404(Post, id=int(request.data["id"]))
         if request.user == post.user:
@@ -123,15 +127,6 @@ class CommentViewSet(viewsets.ViewSet):
         else:
             return Response(status=400)
 
-    def destroy(self, request):
-        self.permission_classes = [IsAuthenticated,]
-        comment = get_object_or_404(Comment, id=int(request.data["id"]))
-        if request.user == comment.user:
-            comment.delete()
-            return Response(status=200)
-        else:
-            return Response(status=403)
-
     def partial_update(self, request):
         self.permission_classes = [IsAuthenticated,]
         comment = get_object_or_404(Comment, id=int(request.data["id"]))
@@ -142,6 +137,18 @@ class CommentViewSet(viewsets.ViewSet):
         else:
             return Response(status=403)
 
+    def destroy(self, request):
+        # destroy by 
+            # id
+            # user
+            # post_id
+        self.permission_classes = [IsAuthenticated,]
+        comment = get_object_or_404(Comment, id=int(request.data["id"]))
+        if request.user == comment.user:
+            comment.delete()
+            return Response(status=200)
+        else:
+            return Response(status=403)
 
 class UploadViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated,]
@@ -154,3 +161,15 @@ class UploadViewSet(viewsets.ViewSet):
             request.user.save()
             return Response(status=200)
         return Response(status=400)
+
+
+class ActivateUser(generics.GenericAPIView):
+    permission_classes = [AllowAny,]
+    def get(self, request, uid, token, format = None):
+        payload = {'uid': uid, 'token': token}
+        url = "http://localhost:8000/auth/users/activation/"
+        response = requests.post(url, data = payload)
+        if response.status_code == 204:
+            return Response({}, response.status_code)
+        else:
+            return Response(response.json())

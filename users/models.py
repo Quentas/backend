@@ -6,7 +6,7 @@ from datetime import datetime
 
 class Account(AbstractUser):  
 	email = models.EmailField(unique=True, blank=False)
-	profile_photo = models.ImageField(upload_to='profile_images', blank=True)
+	profile_photo = models.ImageField(upload_to='profile_images', default='profile_images/default.jpg')
 
 	class Meta:
 		verbose_name = 'Account'	

@@ -3,6 +3,7 @@ from .views import (
     PostViewSet,
     CommentViewSet,
     UploadViewSet,
+    ActivateUser,
 )
 
 urlpatterns = [
@@ -24,4 +25,5 @@ urlpatterns = [
         {
             'post': 'create',
         })),
+    path("activate/<uid>/<token>/", ActivateUser.as_view()),
 ]

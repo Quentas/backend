@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'by@m!qdo1!hyzx75$zuyp-#*-#09958x1@4x!bbv6icjw*+w=0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # Application definition
 
@@ -90,14 +90,14 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'proj_db',
-        'USER' : 'postgres',
-        'PASSWORD' : 'password',
-        'HOST' : 'localhost',
-        'PORT': '5432',
-        #'ENGINE': 'django.db.backends.sqlite3',
-        #        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        #'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        #'NAME': 'proj_db',
+        #'USER' : 'postgres',
+        #'PASSWORD' : 'password',
+        #'HOST' : 'localhost',
+        #'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 
     }
 }

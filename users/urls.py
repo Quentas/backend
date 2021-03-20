@@ -14,6 +14,9 @@ urlpatterns = [
             'put': 'partial_update',
             'delete': 'destroy'
         })),
+    path("posts/<pk>", PostViewSet.as_view({
+            'get' : 'retrieve',
+    })),
     path("comments/", CommentViewSet.as_view(
         {
             'get': 'list',

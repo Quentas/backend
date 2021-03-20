@@ -48,6 +48,13 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ("id", "user", "content", "date", "last_edited")
 #'''
 
+class PostIDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ('id',)
+
+
+
 class PostCreateSerializer(serializers.ModelSerializer): 
     class Meta:
         model = Post

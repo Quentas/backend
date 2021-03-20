@@ -29,6 +29,7 @@ from .models import (
 )
 from .serializers import (
     PostSerializer, 
+    PostIDSerializer, 
     PostCreateSerializer,
     CommentCreateSerializer,
     CommentSerializer,
@@ -54,7 +55,14 @@ class PostViewSet(viewsets.ViewSet):
             queryset = Post.objects.filter(id=post_id)
         else:
             queryset = Post.objects.all()
-        serializer = PostSerializer(queryset.order_by("-date"), many=True)
+        # cuts list of objects
+        endpos = None
+        startpos = None
+        if request.data:
+            endpos = int(request.data['endpos'])
+            startpos = int(request.data['startpos'])
+        serializer = PostIDSerializer(queryset.order_by("-date")[startpos:endpos], many=True)
+        #serializer = PostSerializer(queryset.order_by("-date"), many=True)
         return Response(serializer.data)
 
     def create(self, request):
@@ -67,7 +75,10 @@ class PostViewSet(viewsets.ViewSet):
             return Response(status=400)
 
     def retrieve(self, request, pk=None):
-        pass
+        self.permission_classes = [AllowAny,]
+        post = get_object_or_404(Post, id=int(pk))
+        serializer = PostSerializer(post)
+        return Response(serializer.data)
 
     def partial_update(self, request):
         self.permission_classes = [IsAuthenticated,]

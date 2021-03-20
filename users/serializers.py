@@ -48,6 +48,13 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ("id", "user", "content", "date", "last_edited")
 #'''
 
+class PostIDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ('id',)
+
+
+
 class PostCreateSerializer(serializers.ModelSerializer): 
     class Meta:
         model = Post
@@ -77,7 +84,7 @@ class PartialUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = ['id', 'username', 'first_name', 'last_name',
-                 'is_active', 'is_staff', 'profile_photo', ]
+                 'is_active', 'is_staff', 'email', 'profile_photo', ]
 
 class FileUploadSerializer(serializers.Serializer):
     file_uploaded = serializers.FileField()

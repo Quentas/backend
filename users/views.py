@@ -178,7 +178,7 @@ class ActivateUser(generics.GenericAPIView):
     permission_classes = [AllowAny,]
     def get(self, request, uid, token, format = None):
         payload = {'uid': uid, 'token': token}
-        url = "http://localhost:8000/auth/users/activation/"
+        url = "https://fierce-dusk-92502.herokuapp.com/auth/users/activation/"
         response = requests.post(url, data = payload)
         if response.status_code == 204:
             return Response({}, response.status_code)

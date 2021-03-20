@@ -78,13 +78,24 @@ class PostCreateSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = '__all__'
+        exclude = ('password, ')
 
 class PartialUserSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Account
         fields = ['id', 'username', 'first_name', 'last_name',
-                 'is_active', 'is_staff', 'email', 'profile_photo', ]
+                 'is_active', 'is_staff', 'profile_photo', ]
+        extra_kwargs  = {
+            'username' : {'read_only' : True},
+            'email' : {'read_only' : True},
+            'first_name' : {'read_only' : True},
+            'last_name' : {'read_only' : True},
+            'is_active' : {'read_only' : True},
+            'is_staff' : {'read_only' : True},
+            'profile_photo' : {'read_only' : True},
+            
+        }
 
 class FileUploadSerializer(serializers.Serializer):
     file_uploaded = serializers.FileField()

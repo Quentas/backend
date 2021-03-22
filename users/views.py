@@ -4,7 +4,10 @@ from django.shortcuts import (
     render,
     get_object_or_404,
 )
-from django.http import HttpRequest
+from django.http import (
+    HttpRequest,
+    HttpResponseRedirect,
+)
 from django.contrib.auth import login
 
 from rest_framework import (
@@ -181,6 +184,7 @@ class ActivateUser(generics.GenericAPIView):
         url = "https://fierce-dusk-92502.herokuapp.com/auth/users/activation/"
         response = requests.post(url, data = payload)
         if response.status_code == 204:
-            return Response({}, response.status_code)
+            #return Response({}, response.status_code)
+            return HttpResponseRedirect("https://fierce-dusk-92502.herokuapp.com")
         else:
             return Response(response.json())

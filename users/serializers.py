@@ -75,27 +75,17 @@ class PostCreateSerializer(serializers.ModelSerializer):
         }
     '''
 
-class UserSerializer(serializers.ModelSerializer):
+class DetailUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        exclude = ('password, ')
+        exclude = ('password', 'user_permissions', 'is_superuser')
 
 class PartialUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        fields = ['id', 'username', 'first_name', 'last_name',
-                 'is_active', 'is_staff', 'profile_photo', ]
-        extra_kwargs  = {
-            'username' : {'read_only' : True},
-            'email' : {'read_only' : True},
-            'first_name' : {'read_only' : True},
-            'last_name' : {'read_only' : True},
-            'is_active' : {'read_only' : True},
-            'is_staff' : {'read_only' : True},
-            'profile_photo' : {'read_only' : True},
-            
-        }
+        fields = ['username', 'profile_photo']
+        read_only_fields = fields
 
 class FileUploadSerializer(serializers.Serializer):
     file_uploaded = serializers.FileField()

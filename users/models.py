@@ -25,8 +25,8 @@ class Account(AbstractUser):
 class Post(models.Model):
 	user = models.ForeignKey(Account, on_delete=models.CASCADE)
 	content = models.TextField('content', max_length=400)
-	date = models.DateTimeField(auto_now=True)
-	last_edited = models.DateTimeField(auto_now_add=True)
+	date = models.DateTimeField(editable=False)
+	last_edited = models.DateTimeField()
 
 	
 	def recently_published():
@@ -36,20 +36,24 @@ class Post(models.Model):
 		return self.content
 
 	def save(self, *args, **kwargs):
+		if not self.id:
+			self.date  = datetime.now()
 		self.last_edited = datetime.now()
-		super().save(*args, **kwargs)
+		return super(Post, self).save(*args, **kwargs)
 
 
 class Comment(models.Model):
 	post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
 	user = models.ForeignKey(Account, on_delete=models.CASCADE)
 	content = models.TextField('content', max_length=200)
-	date = models.DateTimeField(auto_now=True)
-	last_edited = models.DateTimeField(auto_now_add=True)
+	date = models.DateTimeField(editable=False)
+	last_edited = models.DateTimeField()
 	
 	def __str__(self):
 		return self.content
 
 	def save(self, *args, **kwargs):
+		if not self.id:
+			self.date  = datetime.now()
 		self.last_edited = datetime.now()
-		super().save(*args, **kwargs)
+		return super(Comment, self).save(*args, **kwargs)

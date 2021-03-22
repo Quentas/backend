@@ -45,8 +45,7 @@ class PostSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ("id", "user", "content", "date", "last_edited")
-#'''
+        fields = '__all__'
 
 class PostIDSerializer(serializers.ModelSerializer):
     class Meta:

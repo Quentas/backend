@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from PIL import Image
 from datetime import datetime    
+from django.utils import timezone
 
 
 class Account(AbstractUser):  
@@ -37,8 +38,8 @@ class Post(models.Model):
 
 	def save(self, *args, **kwargs):
 		if not self.id:
-			self.date  = datetime.now()
-		self.last_edited = datetime.now()
+			self.date  = timezone.now()
+		self.last_edited = timezone.now()
 		return super(Post, self).save(*args, **kwargs)
 
 
@@ -54,6 +55,6 @@ class Comment(models.Model):
 
 	def save(self, *args, **kwargs):
 		if not self.id:
-			self.date  = datetime.now()
-		self.last_edited = datetime.now()
+			self.date  = timezone.now()
+		self.last_edited = timezone.now()
 		return super(Comment, self).save(*args, **kwargs)

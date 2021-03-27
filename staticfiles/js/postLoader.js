@@ -1,8 +1,8 @@
-function getMe(){
+async function getMe(){
     try{
         var token = window.localStorage.getItem("token");
-        const url = "https://fierce-dusk-92502.herokuapp.com/auth/users/me";
-        const response = fetch(url, {
+        const url = "http://127.0.0.1:8000/auth/users/me";
+        const response = await fetch(url, {
             method : 'GET',
             body : null,
             headers : {
@@ -10,18 +10,22 @@ function getMe(){
                 "Authorization" : "Token "+token
             }
         }); 
-        return response.json();
+        return await response.json();
     }
     catch{
         console.log("Couldn't get user info.")
     }
 }
 
-function fillPostDefaultTemplate(postJSON, userJSON){
+function fillPostDefaultTemplate(postJSON, userJSON, ME){
     let editBtnHTML = '';
-    //if(postJSON['user'] = ME['user'])
-    //    editBtnHTML = '<button class="edit_btn" onclick="updatePostButton('+postJSON['id']+')">Edit Post</button>';
-    return '<div class="post" id="postID_'+postJSON['id']+'"> <div class="authorBlock"> <img class="authorAvatar" src="'+userJSON['profile_photo']+'" alt="profile photo"> <div class="authorBlock__inner"> <div class="authorName">'+userJSON['username']+'</div> <time class="datePosted">'+formatDate(new Date(postJSON['date']).toString())+'</time> </div> </div> <div id="post_content_'+postJSON['id']+'" class="contentBlock">'+postJSON['content']+'</div> <div class="other"> <button id="commentsBtn_'+postJSON['id']+'" class="comment_btn" onclick="showComments('+postJSON['id']+')">Comments</button>' + editBtnHTML +' </div> <div class="commentsBlock" id="commentsBlock_'+postJSON['id']+'"> </div> </div>';
+    if(postJSON['user'] == ME['id'])
+        editBtnHTML = '<button class="edit_btn" onclick="updatePostButton('+postJSON['id']+')">Edit Post</button>';
+    let lastEdited = '';
+    if(postJSON['date'] == postJSON['last_edited'])
+        lastEdited = '<div id="datePosted_'+postJSON['id']+'" class="datePosted">'+formatDate(new Date(postJSON['date']).toString())+'</div>';
+    else lastEdited = '<div id="datePosted_'+postJSON['id']+'" class="datePosted">'+formatDate(new Date(postJSON['date']).toString())+' (last edited: '+ formatDate(new Date(postJSON['last_edited']).toString()) +')</div>';
+    return '<div class="post" id="postID_'+postJSON['id']+'"> <div class="authorBlock"> <img class="authorAvatar" src="'+userJSON['profile_photo']+'" alt="profile photo"> <div class="authorBlock__inner"> <div class="authorName">'+userJSON['username']+'</div>'+ lastEdited +'</div> </div> <div id="post_content_'+postJSON['id']+'" class="contentBlock">'+postJSON['content']+'</div> <div class="other"> <button id="commentsBtn_'+postJSON['id']+'" class="comment_btn" onclick="showComments('+postJSON['id']+')">Comments</button>' + editBtnHTML +' </div> <div class="commentsBlock" id="commentsBlock_'+postJSON['id']+'"> </div> </div>';
 }
 
 function fillCommentDefaultTemplate(commentJSON, userJSON){
@@ -31,7 +35,7 @@ function fillCommentDefaultTemplate(commentJSON, userJSON){
 function formatDate(date){
     function pad(s) { return (s < 10) ? '0' + s : s; }
     var d = new Date(date)
-    return pad(d.getDate()) + "/" + pad(d.getMonth()+1) + "/" + d.getFullYear() + "/ " + pad(d.getHours())+":"+ pad(d.getMinutes());
+    return pad(d.getDate()) + "/" + pad(d.getMonth()+1) + "/" + d.getFullYear()+ " " + pad(d.getHours())+":"+ pad(d.getMinutes());
 }
 
 function showComments(id){
@@ -102,33 +106,33 @@ function showComments(id){
 
 
 async function getPostsNumber(){
-    const url = "https://fierce-dusk-92502.herokuapp.com/api/v1/posts/";
+    const url = "http://127.0.0.1:8000/api/v1/posts/";
     const response = await fetch(url);
-    return await response.json().length;
+    return await response.json();
 }
 
 async function getPost(id){
-    const url = "https://fierce-dusk-92502.herokuapp.com/api/v1/posts/"+id;
+    const url = "http://127.0.0.1:8000/api/v1/posts/"+id;
     const response = await fetch(url); 
     return await response.json();
 }
 
 async function getUser(id){
-    const url = "https://fierce-dusk-92502.herokuapp.com/auth/users/"+id;
+    const url = "http://127.0.0.1:8000/auth/users/"+id;
     const response = await fetch(url); 
     return await response.json();
 }
 
 async function getComments(id){
-    const url = "https://fierce-dusk-92502.herokuapp.com/api/v1/comments/?post_id="+id;
+    const url = "http://127.0.0.1:8000/api/v1/comments/?post_id="+id;
     const response = await fetch(url); 
     return await response.json();
 }
 
-function loadPostsFromTo(startpos, endpos){
+function loadPostsFromTo(startpos, endpos, ME){
     console.log(startpos, endpos)
     var l = new XMLHttpRequest();
-    l.open("GET", "https://fierce-dusk-92502.herokuapp.com/api/v1/posts/?startpos="+startpos+"&endpos="+endpos, true);
+    l.open("GET", "http://127.0.0.1:8000/api/v1/posts/?startpos="+startpos+"&endpos="+endpos, true);
     l.setRequestHeader('Content-Type', 'application/json');
     l.onreadystatechange = function(){
         if(this.readyState == 4 && this.status == 200){
@@ -162,7 +166,7 @@ function loadPostsFromTo(startpos, endpos){
                         if(users.length == usersCounter && usersCounter != 0){
                             console.log("users have loaded")
                             postsJSON.forEach(post => {
-                                posts.push({"id" : post['id'], "post" : fillPostDefaultTemplate(post, usersJSON[post['user']])});
+                                posts.push({"id" : post['id'], "post" : fillPostDefaultTemplate(post, usersJSON[post['user']], ME)});
                             })
                             clearInterval(g);
                             let n = setInterval(function(){
@@ -185,32 +189,50 @@ function loadPostsFromTo(startpos, endpos){
     l.send();
 }
 
-function loadPosts(){
-    let postsNumber = getPostsNumber();
-    console.log(postsNumber)
-    let startpos = 0;
-    let endpos = 5;
-    function f(){
-        loadPostsFromTo(startpos, endpos);
-        startpos = endpos;
-        if(endpos + 5 > postsNumber) endpos = postsNumber;
-        else endpos += 5;
-    }
-    f();
-    let lastPageYOffset = 0;
-    window.addEventListener('scroll', function() {
-        if(pageYOffset - lastPageYOffset >= 1250){
-            if(endpos < postsNumber){
-                f();
-            }else{
-                console.log("All posts were loaded.");
-                // remove Event Listener
-            }
+function loadPosts(ME){
+    getPostsNumber().then(postsNumber => {
+        postsNumber = postsNumber.length;
+        let startpos = 0;
+        let endpos = 5;
+        function f(){
+            loadPostsFromTo(startpos, endpos, ME);
+            startpos = endpos;
+            if(endpos + 5 > postsNumber){
+                loadPostsFromTo(endpos, postsNumber, ME);
+                endpos = postsNumber;
+            } 
+            else endpos += 5;
         }
+        f();
+        let lastPageYOffset = 0;
+        window.addEventListener('scroll', function k() {
+            if(pageYOffset - lastPageYOffset >= 1250){
+                if(endpos < postsNumber){
+                    f();
+                    lastPageYOffset = pageYOffset;
+                }else{
+                    console.log("All posts were loaded.");
+                    window.removeEventListener('scroll', k);
+                }
+            }
+        });
     });
 }
 
-let ME = getMe();
-//document.getElementById('myInfo').innerHTML = '<img src='+ME['profile_photo']+'>'+ ME['username']+'';
 
-loadPosts()
+getMe().then(ME => {
+    console.log(ME)
+    if(ME['username'] != undefined){
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('registration').style.display = 'none';
+        document.getElementById('logout').style.display = 'block';
+        document.getElementById('myInfo').innerHTML = '<img id="userImg" src='+ME['profile_photo']+'>'+ ME['username']+'';
+        loadPosts(ME);
+    }else{
+        document.getElementById('login').style.display = 'block';
+        document.getElementById('registration').style.display = 'block';
+        document.getElementById('logout').style.display = 'none';
+        loadPosts(ME);
+    }
+})
+

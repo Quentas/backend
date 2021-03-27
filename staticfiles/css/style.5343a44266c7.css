@@ -100,3 +100,22 @@ main{
     position: fixed;
     right: 0;
 }
+
+#logout{
+    display: none;
+}
+
+.reloadBtn{
+    position: fixed;
+    z-index: 10;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: red;
+}
+
+#userImg{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}

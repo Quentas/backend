@@ -41,11 +41,6 @@ function registerButton(){
     document.getElementById('pf').innerHTML += '<h3>You will have to log in after confirming your email.</h3><br/><form> Email: <input style="margin-left:23px;" type="text" id="p"><br/>Username: <input style="margin-left:23px;" type="text" id="u"><br/>Password: <input style="margin-left:23px;" type="text" id="l"></br><button id="send" type="button" onclick="register()">Enter</button></form>';   
 }
 
-function logoutButton(){
-    drawWrapper();
-    document.getElementById('pf').innerHTML += 'Are you sure you want to log out </br><button onclick="logout()">Yes</button><button onclick="removePW();">No</button>';  
-}
-
 function createPost(){
     let l = document.getElementById('l');
     var token = window.localStorage.getItem("token");
@@ -61,12 +56,11 @@ function createPost(){
     response.then(()=> {
         let pw = document.getElementById('pw');
         let b = document.createElement('button');
-        b.className = "reloadBtn";
-        b.addEventListener('click', ()=>{
-            document.location.reload();
-        })
+        b.class = "reloadBtn";
+        b.onclick = document.location.reload();
         pw.append(b);
     });
+    removePW();
     return 0;
 }
 
@@ -98,7 +92,7 @@ async function login(){
             "Content-Type" : "application/json"
         }
     });
-    await response.json().then(r => {window.localStorage.setItem('token', r['auth_token']); document.location.reload();});
+    await response.json().then(r => window.localStorage.setItem('token', r['auth_token']));
     removePW();
     return 0;
 }
@@ -118,22 +112,6 @@ function register(){
     removePW();
     createPost();
     return 0;
-}
-
-function logout(){
-    let token = window.localStorage.getItem('token');
-    const url = "http://127.0.0.1:8000/auth/token/logout";
-    const response = fetch(url, {
-        method : 'POST',
-        body : null,
-        headers : {
-            "Authorization" : "Token "+token
-        }
-    });
-    window.localStorage.removeItem('token');
-    document.location.reload();
-    return 0;
-
 }
 
 function editEditedPost(id){

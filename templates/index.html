@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <title>Main</title>
 </head>
 <body>
     <main>
         <header id="mainHeader">
             <button id="createPost" onclick="createPostButton()">Create Post</button>
-            <button id="updatePost" onclick="updatePostButton()">Update Post</button>
             <button id="login" onclick="loginButton()">Login</button>
             <button id="registration" onclick="registerButton()">Registration</button>
             <div id="myInfo">You are not loged in</div>
         </header>
     </main>
-    <script src="functionalScripts.js"></script>
-    <script src="postLoader.js"></script>
+    <script src="{% static 'js/functionalScripts.js' %}"></script>
+    <script src="{% static 'js/postLoader.js' %}"></script>
 </body>
 </html>

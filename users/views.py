@@ -44,28 +44,24 @@ class PostViewSet(viewsets.ViewSet):
 
     def list(self, request):
         self.permission_classes = [AllowAny,]
-        # /posts/?user_id=1
-        if request.GET.get('user_id'):                                  
-            user_id = request.GET.get('user_id')
-            queryset = Post.objects.filter(user__id=user_id)
-        # /posts/?username=admin
-        elif request.GET.get('username'):                               
-            username = request.GET.get('username')            
-            queryset = Post.objects.filter(user__username=username)
-        # /posts/?post_id=1
-        elif request.GET.get('post_id'):                                
-            post_id = request.GET.get('post_id')            
-            queryset = Post.objects.filter(id=post_id)
-        else:
-            queryset = Post.objects.all()
-        # cuts list of objects
         endpos = None
         startpos = None
-        if request.data:
-            endpos = int(request.data['endpos'])
-            startpos = int(request.data['startpos'])
+        # /posts/?user_id=1
+        queryset = Post.objects.all()
+        if request.GET.get('user_id'):                                  
+            queryset = queryset.filter(user__id=request.GET.get('user_id'))
+        # /posts/?username=admin
+        if request.GET.get('username'):                                 
+            queryset = Post.objects.filter(user__username=request.GET.get('username'))
+        # /posts/?post_id=1
+        if request.GET.get('post_id'):                                           
+            queryset = Post.objects.filter(id=request.GET.get('post_id'))
+        # cuts list of objects
+        if request.GET.get('endpos'):
+            endpos = int(request.GET.get('endpos'))
+        if request.GET.get('startpos'):
+            startpos = int(request.GET.get('startpos'))
         serializer = PostIDSerializer(queryset.order_by("-date")[startpos:endpos], many=True)
-        #serializer = PostSerializer(queryset.order_by("-date"), many=True)
         return Response(serializer.data)
 
     def create(self, request):
@@ -188,3 +184,6 @@ class ActivateUser(generics.GenericAPIView):
             return HttpResponseRedirect("https://fierce-dusk-92502.herokuapp.com")
         else:
             return Response(response.json())
+
+def index(request):
+    return render(request, 'index.html')

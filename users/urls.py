@@ -12,7 +12,8 @@ urlpatterns = [
             'get': 'list',
             'post': 'create',
             'put': 'partial_update',
-            'delete': 'destroy'
+            'delete': 'destroy',
+            
         })),
     path("posts/<pk>", PostViewSet.as_view({
             'get' : 'retrieve',

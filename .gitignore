@@ -27,5 +27,6 @@ venv.bak/
 .history
 
 # Other 
-
+static
+staticfiles
 proj_db

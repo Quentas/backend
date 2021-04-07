@@ -21,6 +21,8 @@ class Account(AbstractUser):
 			img.thumbnail(output_size)
 			img.save(self.profile_photo.path)
 	
+class Picture(models.Model):
+	image = models.ImageField(upload_to='pictures', blank=True) # should it be blank ???
 
 
 class Post(models.Model):
@@ -28,7 +30,7 @@ class Post(models.Model):
 	content = models.TextField('content', max_length=400)
 	date = models.DateTimeField(editable=False)
 	last_edited = models.DateTimeField()
-
+	images = models.ManyToManyField(Picture, related_name='images', blank=True)
 	
 	def recently_published():
 		return self.date >= (timezone.now() - datetime.timedelta(days = 1))

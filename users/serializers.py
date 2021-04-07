@@ -3,6 +3,7 @@ from .models import (
     Account, 
     Post,
     Comment,
+    Picture
 )
 
 
@@ -10,7 +11,6 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = '__all__'
-
 
 class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,23 +42,32 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ("id", "user", "content", "date", "comments")
         
 '''
+
+class PictureSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Picture
+        fields = ('image',)
+
 class PostSerializer(serializers.ModelSerializer):
+    images = PictureSerializer(many=True)
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = ('id', 'user', 'content', 'date', 'last_edited', 'images',)   
 
 class PostIDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id',)
 
-
-
 class PostCreateSerializer(serializers.ModelSerializer): 
+    images = PictureSerializer(many=True)
     class Meta:
         model = Post
         model.date = serializers.DateTimeField() 
-        fields = ["content"]
+        fields = ['content', 'images',]
+        #fields = ['content',]
+
 '''
         Request be like:
         {

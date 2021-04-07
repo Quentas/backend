@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     PostViewSet,
     CommentViewSet,
-    UploadViewSet,
+    UploadUserPhotoViewSet,
     ActivateUser,
 )
 
@@ -25,7 +25,7 @@ urlpatterns = [
             'put': 'partial_update',
             'delete': 'destroy'
         })),
-    path("profile_photo/", UploadViewSet.as_view(
+    path("profile_photo/", UploadUserPhotoViewSet.as_view(
         {
             'post': 'create',
         })),

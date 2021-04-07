@@ -17,6 +17,7 @@ from rest_framework import (
     serializers,
 )
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import (
     IsAuthenticated,
     AllowAny,
@@ -29,6 +30,7 @@ from .models import (
     Post, 
     Comment, 
     Account,
+    Picture,
 )
 from .serializers import (
     PostSerializer, 
@@ -37,7 +39,9 @@ from .serializers import (
     CommentCreateSerializer,
     CommentSerializer,
     FileUploadSerializer,
+    PictureSerializer,
 )
+from .service import modify_input_for_multiple_files as modify
 
 
 class PostViewSet(viewsets.ViewSet):
@@ -61,18 +65,24 @@ class PostViewSet(viewsets.ViewSet):
             endpos = int(request.GET.get('endpos'))
         if request.GET.get('startpos'):
             startpos = int(request.GET.get('startpos'))
-        serializer = PostIDSerializer(queryset.order_by("-date")[startpos:endpos], many=True)
+        #serializer = PostIDSerializer(queryset.order_by("-date")[startpos:endpos], many=True)
+        serializer = PostSerializer(queryset.order_by("-date")[startpos:endpos], many=True)
         return Response(serializer.data)
 
-    def create(self, request):
+    def create(self, request):      
         self.permission_classes = [IsAuthenticated,]
-        created_post = PostCreateSerializer(data=request.data)
-        if created_post.is_valid():
-            created_post.save(user=request.user)
+        if request.method == 'POST' and request.POST.get('content'):  # check if not empty
+            data = request.POST
+            post = Post.objects.create(user=request.user, content=request.data['content'])
+            images = request.FILES.getlist('images')
+            for image in images:
+                if Path(str(image)).suffix in {'.jpg', '.jpeg', '.png'}:        
+                    img_instance = Picture.objects.create(image=image)
+                    post.images.add(img_instance)
             return Response(status=201)
         else:
             return Response(status=400)
-
+                            
     def retrieve(self, request, pk=None):
         self.permission_classes = [AllowAny,]
         post = get_object_or_404(Post, id=int(pk))
@@ -83,16 +93,15 @@ class PostViewSet(viewsets.ViewSet):
         self.permission_classes = [IsAuthenticated,]
         post = get_object_or_404(Post, id=int(request.data["id"]))
         if request.user == post.user:
-            post.content = request.data["content"]
+            post.content = request.data['content']
+            #if request.data['images']:
+            #    post.images = request.data['images']
             post.save()
             return Response(status=200)
         else:
             return Response(status=403)
 
     def destroy(self, request):
-        # destroy by
-            # id
-            # user
         self.permission_classes = [IsAuthenticated,]
         post = get_object_or_404(Post, id=int(request.data["id"]))
         if request.user == post.user:
@@ -148,10 +157,6 @@ class CommentViewSet(viewsets.ViewSet):
             return Response(status=403)
 
     def destroy(self, request):
-        # destroy by 
-            # id
-            # user
-            # post_id
         self.permission_classes = [IsAuthenticated,]
         comment = get_object_or_404(Comment, id=int(request.data["id"]))
         if request.user == comment.user:
@@ -160,7 +165,8 @@ class CommentViewSet(viewsets.ViewSet):
         else:
             return Response(status=403)
 
-class UploadViewSet(viewsets.ViewSet):
+
+class UploadUserPhotoViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated,]
     serializer_class = FileUploadSerializer
     def create(self, request):
@@ -171,7 +177,7 @@ class UploadViewSet(viewsets.ViewSet):
             request.user.save()
             return Response(status=200)
         return Response(status=400)
-
+   
 
 class ActivateUser(generics.GenericAPIView):
     permission_classes = [AllowAny,]

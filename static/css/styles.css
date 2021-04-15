@@ -11,16 +11,16 @@
     display: flex;
 }
 
-#pw{
+#overlay{
     position: fixed;
     top: 0;
     background-color: rgba(0, 0, 0, 0.5);
 }
 
-#pf{
+#overlay_inner{
     width: 700px;
-    height: 700px;
-    margin-top: 275px;
+    height: 1000px;
+    margin-top: 75px;
     margin-left: calc(50% - 350px);
     background-color: #fff;
 }
@@ -34,6 +34,45 @@ main{
     height: 10000px;
 }
 
+#loadingAnimation_1{
+    width: 100px;
+    height: 100px;
+    border-right: 2px solid white;
+    border-radius: 50%;
+    animation: rotation 1s infinite linear;
+    left: 0;
+    top: 0;
+    position: fixed;
+    z-index: 2;
+}
+#loadingAnimation_2{
+    width: 70px;
+    height: 70px;
+    margin-left: 15px;
+    margin-top: 15px;
+    position: absolute;
+    z-index: 3;
+    border-right: 1px solid white;
+    border-radius: 50%;
+    animation: rotationBack .7s infinite linear;
+}
+
+@keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(359deg);
+    }
+  }
+  @keyframes rotationBack {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(359deg);
+    }
+  }
 .post {
     width: 500px;
     min-height: 350px;
@@ -51,6 +90,7 @@ main{
     width: 40px;
     height: 40px;
     border-radius: 50%;
+    background: white;
 }
 
 .authorBlock__inner {

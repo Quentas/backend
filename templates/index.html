@@ -5,20 +5,23 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <title>Main</title>
 </head>
 <body>
     <main>
         <header id="mainHeader">
-            <button id="createPost" onclick="createPostButton()">Create Post</button>
+            <button id="createPost" onclick="createPostButton(3)">Create Post</button>
             <button id="login" onclick="loginButton()">Login</button>
             <button id="registration" onclick="registerButton()">Registration</button>
             <button id="logout" onclick="logoutButton()">Log Out</button>
             <div id="myInfo">You are not loged in</div>
         </header>
     </main>
-    <script src="{% static 'js/functionalScripts.js' %}"></script>
-    <script src="{% static 'js/postLoader.js' %}"></script>
+    <div id="loadingAnimation_1">
+        <div id="loadingAnimation_2">
+        </div>
+    </div>
+    <script src="{% static 'js/scripts.js' %}"></script>
 </body>
 </html>

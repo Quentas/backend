@@ -11,7 +11,7 @@ class Account(AbstractUser):
 
 	class Meta:
 		verbose_name = 'Account'	
-	
+	'''
 	def save(self, *args, **kwargs):
 		# Resizing profile image
 		super().save(*args, **kwargs)
@@ -20,7 +20,8 @@ class Account(AbstractUser):
 			output_size = (200, 200)
 			img.thumbnail(output_size)
 			img.save(self.profile_photo.path)
-	
+	'''
+
 class Picture(models.Model):
 	image = models.ImageField(upload_to='pictures', blank=True) # should it be blank ???
 
@@ -32,7 +33,7 @@ class Post(models.Model):
 	last_edited = models.DateTimeField()
 	images = models.ManyToManyField(Picture, related_name='images', blank=True)
 	
-	def recently_published():
+	def recently_published(self):
 		return self.date >= (timezone.now() - datetime.timedelta(days = 1))
 
 	def __str__(self):

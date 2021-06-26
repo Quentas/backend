@@ -8,6 +8,7 @@ from django.http import (
     HttpRequest,
     HttpResponseRedirect,
 )
+
 from django.contrib.auth import login
 
 from rest_framework import (
@@ -23,6 +24,7 @@ from rest_framework.permissions import (
     AllowAny,
     IsAdminUser,
 )
+
 from rest_framework.views import APIView
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 
@@ -32,9 +34,9 @@ from .models import (
     Account,
     Picture,
 )
+
 from .serializers import (
     PostSerializer, 
-    PostIDSerializer, 
     PostCreateSerializer,
     CommentCreateSerializer,
     CommentSerializer,
@@ -50,10 +52,7 @@ class PostViewSet(viewsets.ViewSet):
         self.permission_classes = [AllowAny,]
         endpos = None
         startpos = None
-        # /posts/?user_id=1
         queryset = Post.objects.all()
-        if request.GET.get('user_id'):                                  
-            queryset = queryset.filter(user__id=request.GET.get('user_id'))
         # /posts/?username=admin
         if request.GET.get('username'):                                 
             queryset = Post.objects.filter(user__username=request.GET.get('username'))
@@ -65,7 +64,6 @@ class PostViewSet(viewsets.ViewSet):
             endpos = int(request.GET.get('endpos'))
         if request.GET.get('startpos'):
             startpos = int(request.GET.get('startpos'))
-        #serializer = PostIDSerializer(queryset.order_by("-date")[startpos:endpos], many=True)
         serializer = PostSerializer(queryset.order_by("-date")[startpos:endpos], many=True)
         return Response(serializer.data)
 
@@ -183,13 +181,16 @@ class ActivateUser(generics.GenericAPIView):
     permission_classes = [AllowAny,]
     def get(self, request, uid, token, format = None):
         payload = {'uid': uid, 'token': token}
-        url = "https://fierce-dusk-92502.herokuapp.com/auth/users/activation/"
+        #url = "https://fierce-dusk-92502.herokuapp.com/auth/users/activation/"
+        url = "http://127.0.0.1:8000/auth/users/activation/"
         response = requests.post(url, data = payload)
         if response.status_code == 204:
             #return Response({}, response.status_code)
-            return HttpResponseRedirect("https://fierce-dusk-92502.herokuapp.com")
+            #return HttpResponseRedirect("https://fierce-dusk-92502.herokuapp.com")
+            return HttpResponseRedirect("http://127.0.0.1:8000")
         else:
             return Response(response.json())
+
 
 def index(request):
     return render(request, 'index.html')

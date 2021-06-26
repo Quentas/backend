@@ -6,6 +6,7 @@ from django.utils import timezone
 
 
 class Account(AbstractUser):  
+	username = models.CharField(max_length=15, unique=True, blank=False)
 	email = models.EmailField(unique=True, blank=False)
 	profile_photo = models.ImageField(upload_to='profile_images', default='profile_images/default.jpg')
 
@@ -52,6 +53,8 @@ class Comment(models.Model):
 	content = models.TextField('content', max_length=200)
 	date = models.DateTimeField(editable=False)
 	last_edited = models.DateTimeField()
+	images = models.ManyToManyField(Picture, related_name='images', blank=True)
+	parent = models.ForeignKey("self", null=True, blank=True)
 	
 	def __str__(self):
 		return self.content

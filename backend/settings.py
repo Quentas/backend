@@ -132,12 +132,26 @@ REST_FRAMEWORK = {
         ), 
 }
 
+AUTH_USER_MODEL = 'users.Account'
+
+
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL' : '#/password/reset/confirm/{uid}/{token}',
     #'USERNAME_RESET_CONFIRM_URL' : '#/username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL' : 'api/v1/activate/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL' : True,
-    'LOGIN_FIELD' : 'email',
+    #'SEND_ACTIVATION_EMAIL' : True,    # ------- UNLOCK WHEN HOSTED 
+    'LOGOUT_ON_PASSWORD_CHANGE' : True,
+    'USER_CREATE_PASSWORD_RETYPE' : True,
+    '''
+    ///
+        user_id_field allows normal registration and hides user id in url
+        login_field makes it possible to log in with email
+    ///
+    '''
+    'USER_ID_FIELD' : 'username',   
+    'LOGIN_FIELD' : 'email',    
+
+
     'SERIALIZERS' : {
         'current_user' : 'users.serializers.DetailUserSerializer',
         'user' : 'users.serializers.PartialUserSerializer',
@@ -147,8 +161,6 @@ DJOSER = {
         'user': ['rest_framework.permissions.AllowAny'],
     }
 }
-
-AUTH_USER_MODEL = 'users.Account'
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'

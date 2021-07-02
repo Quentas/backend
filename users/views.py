@@ -37,6 +37,7 @@ from .models import (
 
 from .serializers import (
     PostSerializer, 
+    PostDetailSerializer,
     PostCreateSerializer,
     CommentCreateSerializer,
     CommentSerializer,
@@ -84,7 +85,7 @@ class PostViewSet(viewsets.ViewSet):
     def retrieve(self, request, pk=None):
         self.permission_classes = [AllowAny,]
         post = get_object_or_404(Post, id=int(pk))
-        serializer = PostSerializer(post)
+        serializer = PostDetailSerializer(post)
         return Response(serializer.data)
 
     def partial_update(self, request):
@@ -113,33 +114,28 @@ class CommentViewSet(viewsets.ViewSet):
 
     def list(self, request):
         self.permission_classes = [AllowAny,]
-        # /comments/?user_id=1
-        if request.GET.get('user_id'):                                  
-            user_id = request.GET.get('user_id')
-            queryset = Comment.objects.filter(user__id=user_id)
+        queryset = Comment.objects.all()
         # /comments/?username=admin
-        elif request.GET.get('username'):                               
-            username = request.GET.get('username')            
-            queryset = Comment.objects.filter(user__username=username)
+        if request.GET.get('username'):                                 
+            queryset = Comment.objects.filter(user__username=request.GET.get('username'))
         # /comments/?comment_id=1
-        elif request.GET.get('comment_id'):                                
-            comment_id = request.GET.get('comment_id')            
-            queryset = Comment.objects.filter(id=comment_id)
-        # /comments/?post_id=1
-        elif request.GET.get('post_id'):                                
-            post_id = request.GET.get('post_id')            
-            queryset = Comment.objects.filter(post=post_id)
-        else:
-            queryset = Comment.objects.all()
-        serializer = CommentSerializer(queryset.order_by("-date"), many=True)
+        if request.GET.get('comment_id'):                                           
+            queryset = Comment.objects.filter(id=request.GET.get('comment_id'))
+        # cuts list of objects
+        if request.GET.get('endpos'):
+            endpos = int(request.GET.get('endpos'))
+        if request.GET.get('startpos'):
+            startpos = int(request.GET.get('startpos'))
+        serializer = CommentSerializer(queryset.order_by("-date")[startpos:endpos], many=True)
         return Response(serializer.data)
 
     def create(self, request):
         self.permission_classes = [IsAuthenticated,]
         created_comment = CommentCreateSerializer(data=request.data)
         post_instance = get_object_or_404(Post, id=int(request.data["post"]))
+        parent_comment = get_object_or_404(Comment, id=int(request.data["parent"]))
         if created_comment.is_valid():
-            created_comment.save(user=request.user, post=post_instance)
+            created_comment.save(user=request.user, post=post_instance, parent=parent_comment)
             return Response(status=201)
         else:
             return Response(status=400)

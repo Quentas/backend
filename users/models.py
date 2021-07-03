@@ -51,6 +51,7 @@ class Post(models.Model):
 	def count_replies(self):
 		return Comment.objects.filter(post=self).count()
 
+
 class Comment(models.Model):
 	post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
 	user = models.ForeignKey(Account, on_delete=models.CASCADE)

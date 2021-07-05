@@ -142,15 +142,9 @@ DJOSER = {
     #'SEND_ACTIVATION_EMAIL' : True,    # ------- UNLOCK WHEN HOSTED 
     'LOGOUT_ON_PASSWORD_CHANGE' : True,
     'USER_CREATE_PASSWORD_RETYPE' : True,
-    '''
-    ///
-        user_id_field allows normal registration and hides user id in url
-        login_field makes it possible to log in with email
-    ///
-    '''
-    'USER_ID_FIELD' : 'username',   
-    'LOGIN_FIELD' : 'email',    
 
+    'USER_ID_FIELD' : 'username',   # user_id_field allows normal registration and hides user id in url
+    'LOGIN_FIELD' : 'email',    #login_field makes it possible to log in with email
 
     'SERIALIZERS' : {
         'current_user' : 'users.serializers.DetailUserSerializer',

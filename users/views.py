@@ -114,6 +114,8 @@ class CommentViewSet(viewsets.ViewSet):
 
     def list(self, request):
         self.permission_classes = [AllowAny,]
+        endpos = None
+        startpos = None
         queryset = Comment.objects.all()
         # /comments/?username=admin
         if request.GET.get('username'):                                 

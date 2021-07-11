@@ -31,6 +31,14 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('id', 'post', 'parent', 'user', 'content', 'date', 'last_edited', 'images',)
 
 
+class CommentDetialSerializer(serializers.ModelSerializer):
+    images = PictureSerializer(many=True)
+    user = PartialUserSerializer(read_only=True)
+    class Meta:
+        model = Comment
+        fields = ('id', 'post', 'parent', 'user', 'content', 'date', 'last_edited', 'images',)
+
+
 class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
@@ -50,10 +58,11 @@ class PostSerializer(serializers.ModelSerializer):
 class PostDetailSerializer(serializers.ModelSerializer):
     images = PictureSerializer(many=True)
     user = PartialUserSerializer(read_only=True)
+    comments_count = serializers.ReadOnlyField(source='count_replies')
     comments = CommentSerializer(many=True)
     class Meta:
         model = Post
-        fields = ('id', 'user', 'content', 'date', 'last_edited', 'images', 'comments', ) 
+        fields = ('id', 'user', 'content', 'date', 'last_edited', 'images', 'comments_count', 'comments', ) 
 
 class PostCreateSerializer(serializers.ModelSerializer): 
     images = PictureSerializer(many=True)

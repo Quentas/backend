@@ -41,6 +41,7 @@ from .serializers import (
     PostCreateSerializer,
     CommentCreateSerializer,
     CommentSerializer,
+    CommentDetialSerializer,
     FileUploadSerializer,
     PictureSerializer,
 )
@@ -57,9 +58,6 @@ class PostViewSet(viewsets.ViewSet):
         # /posts/?username=admin
         if request.GET.get('username'):                                 
             queryset = Post.objects.filter(user__username=request.GET.get('username'))
-        # /posts/?post_id=1
-        if request.GET.get('post_id'):                                           
-            queryset = Post.objects.filter(id=request.GET.get('post_id'))
         # cuts list of objects
         if request.GET.get('endpos'):
             endpos = int(request.GET.get('endpos'))
@@ -121,6 +119,7 @@ class CommentViewSet(viewsets.ViewSet):
         if request.GET.get('username'):                                 
             queryset = Comment.objects.filter(user__username=request.GET.get('username'))
         # /comments/?comment_id=1
+        # //// is this necessary ???
         if request.GET.get('comment_id'):                                           
             queryset = Comment.objects.filter(id=request.GET.get('comment_id'))
         # cuts list of objects
@@ -130,12 +129,21 @@ class CommentViewSet(viewsets.ViewSet):
             startpos = int(request.GET.get('startpos'))
         serializer = CommentSerializer(queryset.order_by("-date")[startpos:endpos], many=True)
         return Response(serializer.data)
+    '''
+    def retrieve(self, request, pk=None):
+        self.permission_classes = [AllowAny,]
+        comment = get_object_or_404(Post, id=int(pk))
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data)
+    '''
 
     def create(self, request):
         self.permission_classes = [IsAuthenticated,]
+        parent_comment = None
         created_comment = CommentCreateSerializer(data=request.data)
         post_instance = get_object_or_404(Post, id=int(request.data["post"]))
-        parent_comment = get_object_or_404(Comment, id=int(request.data["parent"]))
+        if request.data["parent"]:
+            parent_comment = get_object_or_404(Comment, id=int(request.data["parent"]))
         if created_comment.is_valid():
             created_comment.save(user=request.user, post=post_instance, parent=parent_comment)
             return Response(status=201)

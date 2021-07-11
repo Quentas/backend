@@ -69,3 +69,7 @@ class Comment(models.Model):
 			self.date  = timezone.now()
 		self.last_edited = timezone.now()
 		return super(Comment, self).save(*args, **kwargs)
+
+	@property
+	def count_replies(self):
+		return Comment.objects.filter(parent=self).count()

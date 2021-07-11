@@ -25,10 +25,11 @@ class PictureSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     images = PictureSerializer(many=True)
+    comments_count = serializers.ReadOnlyField(source='count_replies')
     user = PartialUserSerializer(read_only=True)
     class Meta:
         model = Comment
-        fields = ('id', 'post', 'parent', 'user', 'content', 'date', 'last_edited', 'images',)
+        fields = ('id', 'post', 'parent', 'user', 'content', 'date', 'last_edited', 'images', 'comments_count',)
 
 
 class CommentDetialSerializer(serializers.ModelSerializer):

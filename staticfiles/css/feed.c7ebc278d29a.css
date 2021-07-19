@@ -1,0 +1,166 @@
+#feed{
+    width: 608px;
+    min-height: 220px;
+    margin-left: 16px;
+}
+
+#feed > div{
+    background: #ffffff;
+    border-radius: 4px;
+    width: inherit;
+    margin-bottom: 16px;
+    box-shadow: rgb(136 153 166 / 20%) 0px 0px 15px, rgb(136 153 166 / 15%) 0px 0px 3px 1px;
+}
+
+.createPost{
+    padding: 16px;
+    min-height: 158px;
+}
+
+.createPost > div{
+    display: flex;
+}
+
+#newPostInput{
+    color: #242426;
+    opacity: .75;
+    outline: none;
+    border: none;
+    margin-left: 16px;
+    width: 500px;
+    padding-right: 2px;
+    min-height: 32px;
+	box-sizing: border-box;
+    resize:none;
+    overflow: hidden;
+}
+
+.smileButton{
+    width: 15px;
+    height: 15px;
+    margin-top: 10px;
+    margin-left:21px;
+    margin-right: 10px;
+    background: url("../images/SmileButton.6ae333ca8f48.svg") center / contain no-repeat;
+}
+
+#showNewPostsButton{
+    height: 56px;
+    border-radius: 8px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 56px;
+    cursor: pointer;
+}
+
+#newPostsCounter{
+    padding: 1px 3px;
+    background: #7D7499;
+    border-radius: 4px;
+    color: #FAF9FF;
+    font-size: 12px;
+}
+
+.post{
+    min-height: 98px;
+}
+
+.postInner{
+    padding: 16px;
+    width: 576px;
+    display: flex;
+}
+
+.authorAvatarBlock{
+    min-width: 44px;
+    height: 100%;
+}
+
+.authorAvatar{
+    width:32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.postBlock{
+    margin-top: 2px;
+}
+
+.authorUsername{
+    font-weight: 600;
+    margin-right:4px;
+}
+
+.postInfo{
+    color: #242426;
+    opacity: .5;
+    margin-bottom: 4px;
+}
+
+.postContent{
+    width:512px;
+    margin-bottom: 14px;
+    margin-top:4px;
+    cursor: pointer;
+    word-wrap: break-word;
+}
+
+#postSettings{
+    width:52px;
+    height: 100%;
+}
+.other{
+    display: flex;
+}
+.other > button{
+    color: #242426;
+    opacity: 0.75;
+    position:relative;
+    display: block;
+    border: none;
+    cursor: pointer;
+    background: #ffffff;
+    padding-left: 23px;
+    margin-right: 27px;
+}
+
+.other > button.active{
+    color: #7F61E1;
+}
+
+.other > button:before{
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 18px;
+}
+
+.other > button.active:before{
+    filter: invert(41%) sepia(67%) saturate(2223%) hue-rotate(230deg) brightness(91%) contrast(93%);
+}
+
+.comment_btn:before{
+    background: url("../images/Comment.9492203edc89.svg") center / contain no-repeat;
+}
+
+.repost_btn:before{
+    background: url("../images/Repost.7b46a5d951c0.svg") center / contain no-repeat;
+}
+
+.like_btn:before{
+    background: url("../images/Like.02c271caf5aa.svg") center / contain no-repeat;
+}
+
+.like_btn.active:before{
+    background: url("../images/LikeActive.db6c13d0091e.svg") center / contain no-repeat;
+}
+
+.addToBookmark_btn:before{
+    background: url("../images/Bookmark.e58e4fe6d4a9.svg") center / contain no-repeat;
+}
+
+.addToBookmark_btn.active:before{
+    background: url("../images/BookmarkActive.4bbff21001a5.svg") center / contain no-repeat;
+}

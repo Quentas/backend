@@ -5,23 +5,259 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet'>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/feed.css' %}">
+    <link rel="stylesheet" href="{% static 'css/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/Overlay.css' %}">
     <title>Main</title>
 </head>
 <body>
-    <main>
-        <header id="mainHeader">
-            <button id="createPost" onclick="createPostButton(3)">Create Post</button>
-            <button id="login" onclick="loginButton()">Login</button>
-            <button id="registration" onclick="registerButton()">Registration</button>
-            <button id="logout" onclick="logoutButton()">Log Out</button>
-            <div id="myInfo">You are not loged in</div>
-        </header>
-    </main>
-    <div id="loadingAnimation_1">
-        <div id="loadingAnimation_2">
+    <div id="Overlay" class="innactive">
+        <div id="EngageHolder" class="innactive">           
+            <img id="Engage" src="{% static 'images/Engage.png' %}"></img>
+            <button id="Overlay__goBack" onclick="OverlayBackLogic()"><</button>
+        </div>
+
+        <div id="openedPost" class="innactive">
+            <div id="openedPostContent"></div>
+            <div id="openedPostComments"></div>
+        </div>
+
+        <div id="Registration" class="innactive">
+            <div class="form">
+                Your Email<br/>
+                <input id="reg_email" maxlength="32"><br/>
+                Username<br/>
+                <input id="reg_username" maxlength="15"><br/>
+                <div style="width:100%; display: flex;">
+                    <div>
+                        Password<br/>
+                        <input id="reg_pass" maxlength="32">
+                    </div>
+                    <div style="margin-left:20px;">
+                        Confirm Password<br/>
+                        <input id="reg_repass" maxlength="32">
+                    </div>
+                </div>
+
+                <button onclick="registration()">Create Account</button>
+            </div>
+            <div id="loginAskHolder">
+                Already have an account? 
+                <button onclick="openLoginForm()">Log In</button>
+            </div>
+        </div>
+
+        <div id="Login" class="innactive">
+            <div class="form">
+                Username or Email<br/>
+                <input id="login_email" maxlength="32">
+                
+                <div>
+                    Password 
+                    <button id="forgot" onclick="openForgotForm()">Forgot password?</button>
+                </div>
+                <input id="login_pass" maxlength="32">
+                <button onclick="login()">Log In</button>
+            </div>
+        </div>
+
+        <div id="Forgot" class="innactive">
+            <div class="form">
+                <div id="ForgotText">
+                    <span>Forgot Password?</span>
+                    Enter the email adress that you used when you joined Shitter and we will send you instructions to reset your password.
+                </div>
+                Your Email<br/>
+                <input id="forgot_email" maxlength="32">
+                <button onclick="forgot()">Send Reset Instructions</button>
+            </div>
+        </div>
+
+        <div id="Logout" class="innactive">
+            <button onclick="logout()">Log Out</button>
         </div>
     </div>
+    <header>
+        <ul>
+            <li id="logo">
+                <img src="{% static 'images/Logo.svg' %}">
+                    
+                    
+            </li>
+            <li id="search">
+                <label>
+                    <button id="searchButton">
+                        <img src="{% static 'images/Group.svg' %}">
+                    </button>
+                    <input id="searchInput" type="search" placeholder="Search...">
+                </label>
+            </li>
+            <li id="newPost">
+                <button id="cnpb_s">
+                        New Shet
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5.99967 10.6667V6.00004M5.99967 6.00004V1.33337M5.99967 6.00004H10.6663M5.99967 6.00004H1.33301" stroke="#524872" stroke-width="1.4" stroke-linecap="round"/>
+                        </svg>               
+                </button>
+            </li>
+            <li id="myProfile" class="innactive">
+                <a href="#">
+                    <img id="ProfilePic" src="{% static 'images/profilePic.png' %}" alt="">
+                </a>
+                <div id="profileBtn"></div>
+                <div id="profileDropdown">
+                    <nav>
+                        <li>
+                            <a id="Profile" href="#">Profile</a>
+                        </li>
+                        <li style="max-height: 1px; padding: 0;">
+                            <div id="Divider"></div>
+                        </li>
+                        <li>
+                            <a id="Bookmark" href="#">Bookmark</a>
+                        </li>
+                        <li style="max-height: 1px; padding: 0;">
+                            <div id="Divider"></div>
+                        </li>
+                        <li>
+                            <a id="Settings" href="#">Settings</a>
+                        </li>
+                        <li style="max-height: 1px; padding: 0;">
+                            <div id="Divider"></div>
+                        </li>
+                        <li>
+                            <a id="Exit" style="color:#E93737;" href="#">Exit</a>
+                        </li>
+                    </nav>
+                </div>
+            </li>
+            <li>
+                <button id="signup" onclick="openRegisterForm()">Sign Up</button>
+            </li>
+        </ul>
+    </header>
+
+    <main>
+        <div id="main">
+            <div id="leftSideBar">
+                <nav>
+                    <li id="Hot_Recent">
+                        <a id="Hot" href="#">Hot</a>
+                        <a id="Recent" href="#"></a>
+                    </li>
+                    <li>
+                        <a id="Subscriptions" href="#">Subscriptions</a>
+                    </li>
+                    <li style="max-height: 1px; padding: 0;">
+                        <div id="Divider"></div>
+                    </li>
+                    <li id="Notifications">
+                        <a id="Notifications__inner" href="#">Notifications</a>
+                        <span id="NotificationsCounter"></span>
+                    </li>
+                </nav>
+            </div>
+            
+            <div id="feed">
+
+                <div class="createPost">
+                    <div>
+                        <a href="#">
+                            <img class="authorAvatar" src="{% static 'images/profilePic.png' %}">
+                        </a>
+                        <textarea id="newPostInput" placeholder="What's up ?" maxlength="400"></textarea>
+                        <div class="smileButton"></div>
+                    </div>
+                    <div>
+                        <button id="newPostButton"></button>
+                    </div>
+                </div>
+
+                <div id="showNewPostsButton">
+                    View <span id="newPostsCounter">19</span> new Shets
+                </div>
+
+                <!--div class="post" id="post_1">
+                    <div class="postInner">
+                        <div class="authorAvatarBlock">
+                            <a href="user/joebidon">
+                                <img class="authorAvatar" src="images/profilePic.png">
+                            </a>
+                        </div>
+                        <div class="postBlock">
+                            <div>
+                                <a class="authorUsername" href="user/joebidon">Joe Bidon</a><span class="postInfo">@joebidon · 11.11.11 11:11</span>
+                            </div>
+                            <div class="postContent" id="post_content_1">
+                                content YAY
+                            </div>
+                            <div class="other">
+                                <button id="commentsBtn_1" class="comment_btn">12</button>
+                                <button id="repostBtn_1" class="repost_btn">1</button>
+                                <button id="likeBtn_1" class="like_btn">1111</button>
+                                <button id="addToBookmarkBtn_1" class="addToBookmark_btn"></button>
+                             </div>
+                        </div>
+                        <div id="postSettings">
+                            ...
+                        </div>
+                    </div>                    
+                </div-->
+            </div>
+
+            <div id="rightSideBar">
+                <ul>
+                    <li id="sfu">Suggestions for You</li>
+                    <li>
+                        <div>
+                            <a href="#">
+                                <img  class="authorAvatar" src="{% static 'images/profilePic.png' %}">
+                            </a>
+                            <div>
+                                <a class="authorUsername" href="#">Name</a>
+                                <br/>
+                                <span class="postInfo">Tag</span>
+                            </div>
+                            <button class="addToFriendsListButton"></button>
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <a href="#">
+                                <img  class="authorAvatar" src="{% static 'images/profilePic.png' %}">
+                            </a>
+                            <div>
+                                <a class="authorUsername" href="#">Name</a>
+                                <br/>
+                                <span class="postInfo">Tag</span>
+                            </div>
+                            <button class="addToFriendsListButton"></button>
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <a href="#">
+                                <img  class="authorAvatar" src="{% static 'images/profilePic.png' %}">
+                            </a>
+                            <div>
+                                <a class="authorUsername" href="#">Name</a>
+                                <br/>
+                                <span class="postInfo">Tag</span>
+                            </div>
+                            <button class="addToFriendsListButton"></button>
+                        </div>
+                    </li>
+                </ul>
+                <div id="Divider2"></div>
+                <a href="#">Show more...</a>
+            </div>
+        <div>
+    </main>
+    <script src="{% static 'js/fillPost.js' %}"></script>
+    <script src="{% static 'js/hash.js' %}"></script>
+    <script src="{% static 'js/clientserver.js' %}"></script>
     <script src="{% static 'js/scripts.js' %}"></script>
 </body>
 </html>

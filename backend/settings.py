@@ -91,12 +91,6 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        #'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        #'NAME': 'proj_db',
-        #'USER' : 'postgres',
-        #'PASSWORD' : 'password',
-        #'HOST' : 'localhost',
-        #'PORT': '5432',
         'ENGINE': 'django.db.backends.sqlite3',
                 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 
@@ -141,7 +135,7 @@ DJOSER = {
     'ACTIVATION_URL' : 'api/v1/activate/{uid}/{token}',
     #'SEND_ACTIVATION_EMAIL' : True,    # ------- UNLOCK WHEN HOSTED 
     'LOGOUT_ON_PASSWORD_CHANGE' : True,
-    'USER_CREATE_PASSWORD_RETYPE' : True,
+    #'USER_CREATE_PASSWORD_RETYPE' : True,
 
     'USER_ID_FIELD' : 'username',   # user_id_field allows normal registration and hides user id in url
     'LOGIN_FIELD' : 'email',    #login_field makes it possible to log in with email

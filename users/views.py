@@ -1,4 +1,5 @@
 from pathlib import Path
+from django.http.response import HttpResponse
 import requests
 from django.shortcuts import (
     render,
@@ -27,6 +28,9 @@ from rest_framework.permissions import (
 
 from rest_framework.views import APIView
 from rest_framework.authtoken.serializers import AuthTokenSerializer
+
+from django.views.decorators.csrf import csrf_exempt
+
 
 from .models import (
     Post, 
@@ -67,9 +71,9 @@ class PostViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def create(self, request):      
-        self.permission_classes = [IsAuthenticated,]
+        self.permission_classes = [IsAuthenticated,]     ###### CHANGE THIS SETTINGS
+        #print(request.data)
         if request.method == 'POST' and request.POST.get('content'):  # check if not empty
-            data = request.POST
             post = Post.objects.create(user=request.user, content=request.data['content'])
             images = request.FILES.getlist('images')
             for image in images:
@@ -85,6 +89,8 @@ class PostViewSet(viewsets.ViewSet):
         post = get_object_or_404(Post, id=int(pk))
         serializer = PostDetailSerializer(post)
         return Response(serializer.data)
+        
+
 
     def partial_update(self, request):
         self.permission_classes = [IsAuthenticated,]
@@ -129,10 +135,11 @@ class CommentViewSet(viewsets.ViewSet):
             startpos = int(request.GET.get('startpos'))
         serializer = CommentSerializer(queryset.order_by("-date")[startpos:endpos], many=True)
         return Response(serializer.data)
+    
     '''
     def retrieve(self, request, pk=None):
         self.permission_classes = [AllowAny,]
-        comment = get_object_or_404(Post, id=int(pk))
+        comment = get_object_or_404(Comment, id=int(pk))
         serializer = CommentSerializer(comment)
         return Response(serializer.data)
     '''
@@ -200,3 +207,5 @@ class ActivateUser(generics.GenericAPIView):
 
 def index(request):
     return render(request, 'index.html')
+
+

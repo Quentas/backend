@@ -77,7 +77,7 @@ class PostCreateSerializer(serializers.ModelSerializer):
 class DetailUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        exclude = ('password', 'user_permissions', 'is_superuser')
+        fields = ('id', 'username', 'first_name', 'last_name', 'profile_photo',)
 
 
 class FileUploadSerializer(serializers.Serializer):

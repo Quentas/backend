@@ -30,7 +30,7 @@ function OverlayBackLogic(){
         openedPost.classList.add("innactive");
         Forgot.classList.add("innactive");
         document.getElementById("Logout").classList.add("innactive");  
-        history.pushState({foo: "bar"} , "page 2", "")
+        history.pushState({foo: "bar"} , "page 2", " ")
     }
 }
 

@@ -25,7 +25,7 @@ function login(){
     }, {"Content-Type" : "application/json", "Accept": "application/json"}).then(r => {
         console.log(r);
         window.localStorage.setItem('token', r['auth_token']);
-        //document.location.reload();
+        document.location.reload();
     })
 }
 

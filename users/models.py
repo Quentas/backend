@@ -34,7 +34,7 @@ class Post(models.Model):
 	user = models.ForeignKey(Account, on_delete=models.CASCADE)
 	content = models.TextField('content', max_length=400)
 	date = models.DateTimeField(editable=False)
-	last_edited = models.DateTimeField()
+	last_edited = models.DateTimeField(editable=False)
 	images = models.ManyToManyField(Picture, related_name='post_images', blank=True)
 	likes = models.ManyToManyField(Account, related_name='post_like', blank=True)
 	
@@ -64,7 +64,7 @@ class Comment(models.Model):
 	user = models.ForeignKey(Account, on_delete=models.CASCADE)
 	content = models.TextField('content', max_length=200)
 	date = models.DateTimeField(editable=False)
-	last_edited = models.DateTimeField()
+	last_edited = models.DateTimeField(editable=False)
 	images = models.ManyToManyField(Picture, related_name='comment_images', blank=True)
 	parent = models.ForeignKey("self", null=True, blank=True, on_delete=CASCADE)
 	

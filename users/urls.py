@@ -6,7 +6,6 @@ from .views import (
     UploadUserPhotoViewSet,
     ActivateUser,
     UsersMe,
-    PostLikeViewSet,
 )
 
 urlpatterns = [

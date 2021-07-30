@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    Email
+    <input id="i1"></input>
+    Password
+    <input id="i2"></input>
+    <button onclick="login()">LOGIN</button>
+    <br/>
+    GET ME
+    <button onclick="getME()">GET ME</button>
+    <br/>
+    POST CREATE
+    <input id="i3"></input>
+    <button onclick="post()">POST</button>
+    <script>
+        async function executeRequest(url, method, body = null, headers = null){
+            headers = (headers == null) ? {'Content-Type' : 'application/json'} : headers;
+            body = (body == null) ? null : JSON.stringify(body);
+            console.log(body)
+            console.log(headers)
+            return await fetch("http://127.0.0.1:8000/" + url,{
+                method : method,
+                body : body,
+                headers : headers
+            }).then(response => {
+                return response.json()
+            })
+            .catch(err => { return  err})
+        }
+
+        function login(){
+            let password = document.getElementById("i2").value;
+            let email =  document.getElementById("i1").value;
+            executeRequest("auth/token/login/", 'POST', {
+                "password": password,
+                "email": email
+            }, {"Content-Type" : "application/json", "Accept": "application/json"}).then(r => {
+                if(r['auth_token'] != undefined){
+                    window.localStorage.setItem('token', r['auth_token']);
+                }
+            })
+        }
+
+        function post(){
+            let q = "qf1f";
+            
+            axios({method: 'post',url: '/api/v1/posts/', data: { content: q }, headers:{
+                "Authorization" : "Token " + window.localStorage.getItem('token')}
+                });
+            }   
+        
+        function getME(){
+            let token = window.localStorage.getItem('token');
+            if(token != undefined){
+                executeRequest("auth/users/me", 'GET', null, {"Content-Type" : "application/json", "Authorization" : "Token "+window.localStorage.getItem("token")})
+                .then(r => {console.log("USERS/ME: "+typeof(r));console.log(r);});
+            }else{
+                console.log("NO TOKEN")
+            }
+                
+
+        }
+    </script>
+</body>
+</html>

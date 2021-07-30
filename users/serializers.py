@@ -29,7 +29,8 @@ class CommentSerializer(serializers.ModelSerializer):
     user = PartialUserSerializer(read_only=True)
     class Meta:
         model = Comment
-        fields = ('id', 'post', 'parent', 'user', 'content', 'date', 'last_edited', 'images', 'comments_count',)
+        fields = ('id', 'post', 'parent', 'user', 'content', 'date', 
+        'last_edited', 'images', 'comments_count',)
 
 
 class CommentDetialSerializer(serializers.ModelSerializer):
@@ -50,28 +51,39 @@ class CommentCreateSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     images = PictureSerializer(many=True)
     user = PartialUserSerializer(read_only=True)
+    total_likes = serializers.ReadOnlyField()
     comments_count = serializers.ReadOnlyField(source='count_replies')
+    is_fan = serializers.SerializerMethodField()
     class Meta:
         model = Post
-        fields = ('id', 'user', 'content', 'date', 'last_edited', 'images', 'comments_count', )   
+        fields = ('id', 'user', 'content', 'date', 'last_edited',
+         'images', 'comments_count', 'total_likes', )   
     
 
 class PostDetailSerializer(serializers.ModelSerializer):
     images = PictureSerializer(many=True)
     user = PartialUserSerializer(read_only=True)
     comments_count = serializers.ReadOnlyField(source='count_replies')
+    total_likes = serializers.ReadOnlyField()
     comments = CommentSerializer(many=True)
+    #is_fan = serializers.SerializerMethodField()
     class Meta:
         model = Post
-        fields = ('id', 'user', 'content', 'date', 'last_edited', 'images', 'comments_count', 'comments', ) 
+        fields = ('id', 'user', 'content', 'date', 'last_edited', 'images', 
+        'comments_count', 'comments', 'total_likes', ) 
 
+    def get_is_fan():
+        return False                
+    
 class PostCreateSerializer(serializers.ModelSerializer): 
-    images = PictureSerializer(many=True)
+    #images = PictureSerializer(many=True)
     class Meta:
         model = Post
         model.date = serializers.DateTimeField() 
-        fields = ['content', 'images',]
-        #fields = ['content',]
+        #fields = ['content', 'images',]
+        fields = ['content',]
+
+    ## write create method and _validateImages_ method
 
 
 class DetailUserSerializer(serializers.ModelSerializer):

@@ -19,6 +19,10 @@ input[type="search"]::-webkit-search-results-decoration {
   -webkit-appearance:none;
 }
 
+body{
+    background: #faf9ff;
+}
+
 li{
     list-style: none;
 }
@@ -37,16 +41,36 @@ a{
 }
 
 main{
-    background: #faf9ff;
     width: 100%;
-    height: 2000px;
 }
+
+#Overlay.fixed,
+#pageWrapper__Overlay.fixed{
+    position: fixed;
+    left: 0;
+}
+
+#Overlay.innactive,
+#openedPost.innactive,
+#Registration.innactive,
+#Login.innactive,
+#myProfile.innactive,
+#EngageHolder.innactive,
+#Forgot.innactive,
+#Logout.innactive,
+#signup.innactive,
+#openedImage.innactive,
+#ProfilePage.innactive,
+#feed_subscriptions.innactive{
+    display: none;
+}
+
 
 #main{
     display: flex;
-    width:52%;
+    width: 1024px;
     height: inherit;
-    margin-left: 24%;
+    margin-left: calc(50% - 512px);
     margin-top: 16px;
     position: absolute;
 }
@@ -178,4 +202,39 @@ main{
     margin: 18px;
     color: #7F61E1;
     display: block;
+}
+
+#PopUp{
+    position:fixed;
+    width: 280px;
+    height: 70px;
+    z-index: 6;
+    bottom: -220px;
+    right: 30px;
+    border: 2px red solid;
+    background:rgb(177, 82, 82);
+    color: #EDE9F9;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 68px;
+    transform: translate(280px, 0px);
+    transition-duration: .5s;
+}
+
+#PopUp.active{
+    transform: translate(0, -240px);
+    transition-duration: 1s;
+}
+
+body.noscroll{
+    overflow:hidden;
+}
+
+.scrollbar-measure {
+	width: 100px;
+	height: 100px;
+	overflow: scroll;
+	position: absolute;
+	top: -9999px;
 }

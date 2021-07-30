@@ -28,6 +28,7 @@ from rest_framework.permissions import (
 
 from rest_framework.views import APIView
 from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.authtoken.models import Token
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -37,9 +38,11 @@ from .models import (
     Comment, 
     Account,
     Picture,
+    
 )
 
 from .serializers import (
+    DetailUserSerializer,
     PostSerializer, 
     PostDetailSerializer,
     PostCreateSerializer,
@@ -50,9 +53,10 @@ from .serializers import (
     PictureSerializer,
 )
 from .service import modify_input_for_multiple_files as modify
+from .mixins import LikedMixin
 
 
-class PostViewSet(viewsets.ViewSet):
+class PostViewSet(LikedMixin, viewsets.ViewSet):
 
     def list(self, request):
         self.permission_classes = [AllowAny,]
@@ -71,8 +75,14 @@ class PostViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def create(self, request):      
-        self.permission_classes = [IsAuthenticated,]     ###### CHANGE THIS SETTINGS
-        #print(request.data)
+        self.permission_classes = [IsAuthenticated,]
+        created_post = PostCreateSerializer(data=request.data)
+        if created_post.is_valid():
+            created_post.save(user=request.user)
+            return Response(status=201)
+        else:
+            return Response(status=400)
+        '''
         if request.method == 'POST' and request.POST.get('content'):  # check if not empty
             post = Post.objects.create(user=request.user, content=request.data['content'])
             images = request.FILES.getlist('images')
@@ -82,16 +92,17 @@ class PostViewSet(viewsets.ViewSet):
                     post.images.add(img_instance)
             return Response(status=201)
         else:
+            #print(request.data)
             return Response(status=400)
-                            
+        '''
+
+                         
     def retrieve(self, request, pk=None):
         self.permission_classes = [AllowAny,]
         post = get_object_or_404(Post, id=int(pk))
         serializer = PostDetailSerializer(post)
         return Response(serializer.data)
         
-
-
     def partial_update(self, request):
         self.permission_classes = [IsAuthenticated,]
         post = get_object_or_404(Post, id=int(request.data["id"]))
@@ -112,6 +123,15 @@ class PostViewSet(viewsets.ViewSet):
             return Response(status=200)
         else:
             return Response(status=403)
+        
+    def like(self, request, pk):
+        self.permission_classes = [IsAuthenticated,]
+        post = get_object_or_404(Post, id=pk)
+        if post.likes.filter(username=request.user).exists():
+            post.likes.remove(request.user)
+            return Response(status=204)
+        post.likes.add(request.user)
+        return Response(status=200)
 
 
 class CommentViewSet(viewsets.ViewSet):
@@ -205,7 +225,20 @@ class ActivateUser(generics.GenericAPIView):
             return Response(response.json())
 
 
+class UsersMe(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated,]
+
+    def list(self, request):
+        token_received = request.headers['Authorization'][6:]
+        print(token_received)
+        token_instance = get_object_or_404(Token, key=token_received)
+        user_instance = Account.objects.get(pk=token_instance.user_id)
+        print(user_instance)
+        serializer = DetailUserSerializer(user_instance)
+        return Response(serializer.data)
+
+
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'index4.html')
 
 

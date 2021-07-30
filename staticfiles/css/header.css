@@ -1,24 +1,27 @@
 
 header{
     background: #ffffff;
-    width: 100%;
     height: 48px;
+    border: 1px solid #EDE9F9;
+    overflow: hidden;
+    border-right: 1px solid #ffffff;
 }
 
 header > ul{
     display: flex;
-    width:52%;
+    width: 1024px;
     height: inherit;
-    margin-left: 24%;
+    margin-left: calc(50% - 512px);
     position: absolute;
 }
 
 header > ul > li{
-    margin-top: 8px;
+    margin-top: 7px;
 }
 
 #logo > img{
-    margin-top: 7px;
+    margin-left: 7px;
+    margin-top: 8px;
 }
 
 #search{
@@ -157,7 +160,7 @@ header > ul > li{
     text-align: left;
     padding-left: 14px;
     position: absolute;
-    right: 0;
+    right: -7px;
 }
 
 #signup:after{

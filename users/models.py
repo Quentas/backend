@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import AbstractUser
 from PIL import Image
 from datetime import datetime
@@ -34,6 +36,7 @@ class Post(models.Model):
 	date = models.DateTimeField(editable=False)
 	last_edited = models.DateTimeField()
 	images = models.ManyToManyField(Picture, related_name='post_images', blank=True)
+	likes = models.ManyToManyField(Account, related_name='post_like', blank=True)
 	
 	def recently_published(self):
 		return self.date >= (timezone.now() - datetime.timedelta(days = 1))
@@ -50,6 +53,10 @@ class Post(models.Model):
 	@property
 	def count_replies(self):
 		return Comment.objects.filter(post=self).count()
+
+	@property
+	def total_likes(self):
+		return self.likes.count()
 
 
 class Comment(models.Model):
@@ -73,3 +80,5 @@ class Comment(models.Model):
 	@property
 	def count_replies(self):
 		return Comment.objects.filter(parent=self).count()
+
+

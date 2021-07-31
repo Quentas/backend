@@ -158,13 +158,11 @@ class CommentViewSet(viewsets.ViewSet):
                                             many=True, context={'request': request})
         return Response(serializer.data)
     
-    '''
     def retrieve(self, request, pk=None):
         self.permission_classes = [AllowAny,]
         comment = get_object_or_404(Comment, id=int(pk))
-        serializer = CommentSerializer(comment)
+        serializer = CommentDetialSerializer(comment, context={'request': request})
         return Response(serializer.data)
-    '''
 
     def create(self, request):
         self.permission_classes = [IsAuthenticated,]

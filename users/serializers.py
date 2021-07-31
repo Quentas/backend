@@ -44,10 +44,16 @@ class CommentSerializer(serializers.ModelSerializer):
 class CommentDetialSerializer(serializers.ModelSerializer):
     images = PictureSerializer(many=True)
     user = PartialUserSerializer(read_only=True)
+    is_fan = SerializerMethodField()
+    total_likes = serializers.ReadOnlyField()
     class Meta:
         model = Comment
-        fields = ('id', 'post', 'parent', 'user', 'content', 'date', 'last_edited', 'images',)
+        fields = ('id', 'parent', 'user', 'content', 'date', 'last_edited',
+                         'images', 'is_fan', 'total_likes',)
 
+    def get_is_fan(self, obj):
+        user = self.context['request'].user
+        return is_fan(obj, user)
 
 class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:

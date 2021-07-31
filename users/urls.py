@@ -30,6 +30,7 @@ urlpatterns = [
         })),
     path("comments/<pk>", CommentViewSet.as_view(
         {
+            'get' : 'retrieve',
             'put': 'partial_update',
             'delete': 'destroy'
         })),

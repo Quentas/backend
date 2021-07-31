@@ -71,7 +71,8 @@ class PostViewSet(LikedMixin, viewsets.ViewSet):
             endpos = int(request.GET.get('endpos'))
         if request.GET.get('startpos'):
             startpos = int(request.GET.get('startpos'))
-        serializer = PostSerializer(queryset.order_by("-date")[startpos:endpos], many=True)
+        serializer = PostSerializer(queryset.order_by("-date")[startpos:endpos], 
+                                        many=True, context={'request': request})
         return Response(serializer.data)
 
     def create(self, request):      
@@ -97,15 +98,15 @@ class PostViewSet(LikedMixin, viewsets.ViewSet):
         '''
 
                          
-    def retrieve(self, request, pk=None):
+    def retrieve(self, request, pk):
         self.permission_classes = [AllowAny,]
-        post = get_object_or_404(Post, id=int(pk))
-        serializer = PostDetailSerializer(post)
+        post = get_object_or_404(Post, id=pk)
+        serializer = PostDetailSerializer(post, context={'request': request})
         return Response(serializer.data)
         
-    def partial_update(self, request):
+    def partial_update(self, request, pk=None):
         self.permission_classes = [IsAuthenticated,]
-        post = get_object_or_404(Post, id=int(request.data["id"]))
+        post = get_object_or_404(Post, id=pk)
         if request.user == post.user:
             post.content = request.data['content']
             #if request.data['images']:
@@ -115,9 +116,9 @@ class PostViewSet(LikedMixin, viewsets.ViewSet):
         else:
             return Response(status=403)
 
-    def destroy(self, request):
+    def destroy(self, request, pk):
         self.permission_classes = [IsAuthenticated,]
-        post = get_object_or_404(Post, id=int(request.data["id"]))
+        post = get_object_or_404(Post, id=pk)
         if request.user == post.user:
             post.delete()
             return Response(status=200)
@@ -153,7 +154,8 @@ class CommentViewSet(viewsets.ViewSet):
             endpos = int(request.GET.get('endpos'))
         if request.GET.get('startpos'):
             startpos = int(request.GET.get('startpos'))
-        serializer = CommentSerializer(queryset.order_by("-date")[startpos:endpos], many=True)
+        serializer = CommentSerializer(queryset.order_by("-date")[startpos:endpos], 
+                                            many=True, context={'request': request})
         return Response(serializer.data)
     
     '''
@@ -177,9 +179,9 @@ class CommentViewSet(viewsets.ViewSet):
         else:
             return Response(status=400)
 
-    def partial_update(self, request):
+    def partial_update(self, request, pk):
         self.permission_classes = [IsAuthenticated,]
-        comment = get_object_or_404(Comment, id=int(request.data["id"]))
+        comment = get_object_or_404(Comment, id=pk)
         if request.user == comment.user:
             comment.content = request.data["content"]
             comment.save()
@@ -187,14 +189,23 @@ class CommentViewSet(viewsets.ViewSet):
         else:
             return Response(status=403)
 
-    def destroy(self, request):
+    def destroy(self, request, pk):
         self.permission_classes = [IsAuthenticated,]
-        comment = get_object_or_404(Comment, id=int(request.data["id"]))
+        comment = get_object_or_404(Comment, id=pk)
         if request.user == comment.user:
             comment.delete()
             return Response(status=200)
         else:
             return Response(status=403)
+
+    def like(self, request, pk):
+        self.permission_classes = [IsAuthenticated,]
+        comment = get_object_or_404(Comment, id=pk)
+        if comment.likes.filter(username=request.user).exists():
+            comment.likes.remove(request.user)
+            return Response(status=204)
+        comment.likes.add(request.user)
+        return Response(status=200)
 
 
 class UploadUserPhotoViewSet(viewsets.ViewSet):
@@ -223,19 +234,6 @@ class ActivateUser(generics.GenericAPIView):
             return HttpResponseRedirect("http://127.0.0.1:8000")
         else:
             return Response(response.json())
-
-
-class UsersMe(viewsets.ViewSet):
-    permission_classes = [IsAuthenticated,]
-
-    def list(self, request):
-        token_received = request.headers['Authorization'][6:]
-        print(token_received)
-        token_instance = get_object_or_404(Token, key=token_received)
-        user_instance = Account.objects.get(pk=token_instance.user_id)
-        print(user_instance)
-        serializer = DetailUserSerializer(user_instance)
-        return Response(serializer.data)
 
 
 def index(request):

@@ -5,7 +5,6 @@ from .views import (
     CommentViewSet,
     UploadUserPhotoViewSet,
     ActivateUser,
-    UsersMe,
 )
 
 urlpatterns = [
@@ -13,28 +12,36 @@ urlpatterns = [
         {
             'get': 'list',
             'post': 'create',
-            'put': 'partial_update',
-            'delete': 'destroy',
-            
         })),
     path("posts/<pk>", PostViewSet.as_view({
             'get' : 'retrieve',
+            'put': 'partial_update',
+            'delete': 'destroy',
     })),
     path("posts/<pk>/like/", PostViewSet.as_view({
             'post' : 'like',
     })),
+
+
     path("comments/", CommentViewSet.as_view(
         {
             'get': 'list',
             'post': 'create',
+        })),
+    path("comments/<pk>", CommentViewSet.as_view(
+        {
             'put': 'partial_update',
             'delete': 'destroy'
         })),
+    path("comments/<pk>/like/", CommentViewSet.as_view({
+            'post' : 'like',
+    })),
+
+
     path("profile_photo/", UploadUserPhotoViewSet.as_view(
         {
             'post': 'create',
         })),
     path("activate/<uid>/<token>/", ActivateUser.as_view()),
 
-    path("users/me/", UsersMe.as_view({'get': 'list',})),
 ]

@@ -27,9 +27,7 @@ def is_fan(obj, user) -> bool:
     """
     if not user.is_authenticated:
         return False
-    likes = Like.objects.filter(
-        content_type=obj_type, object_id=obj.id, user=user)
-    return likes.exists()
+    return obj.likes.filter(username=user).exists()
 
 def get_fans(obj):
     """

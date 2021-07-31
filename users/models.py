@@ -67,6 +67,8 @@ class Comment(models.Model):
 	last_edited = models.DateTimeField(editable=False)
 	images = models.ManyToManyField(Picture, related_name='comment_images', blank=True)
 	parent = models.ForeignKey("self", null=True, blank=True, on_delete=CASCADE)
+	likes = models.ManyToManyField(Account, related_name='comment_like', blank=True)
+
 	
 	def __str__(self):
 		return self.content
@@ -81,4 +83,6 @@ class Comment(models.Model):
 	def count_replies(self):
 		return Comment.objects.filter(parent=self).count()
 
-
+	@property
+	def total_likes(self):
+		return self.likes.count()

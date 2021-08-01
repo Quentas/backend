@@ -5,6 +5,7 @@ from .views import (
     CommentViewSet,
     UploadUserPhotoViewSet,
     ActivateUser,
+    UserBioUpdateView,
 )
 
 urlpatterns = [
@@ -42,6 +43,10 @@ urlpatterns = [
     path("profile_photo/", UploadUserPhotoViewSet.as_view(
         {
             'post': 'create',
+        })),
+    path("user_bio/", UserBioUpdateView.as_view(
+        {
+            'put': 'partial_update',
         })),
     path("activate/<uid>/<token>/", ActivateUser.as_view()),
 

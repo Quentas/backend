@@ -1,3 +1,4 @@
+from django.db.migrations.operations import fields
 from rest_framework.fields import SerializerMethodField
 from users.service import is_fan
 from rest_framework import serializers
@@ -15,8 +16,22 @@ class PartialUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        fields = ['username', 'profile_photo' ,'first_name', 'last_name']
+        fields = ['username', 'profile_photo' ,'first_name', 'last_name', 'bio',]
         read_only_fields = fields
+
+
+class objUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Account
+        fields = ['username', 'profile_photo' ,'first_name', 'last_name',]
+        read_only_fields = fields
+
+
+class UserBioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ('bio',)
 
 
 class PictureSerializer(serializers.ModelSerializer):
@@ -28,7 +43,7 @@ class PictureSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     images = PictureSerializer(many=True)
     comments_count = serializers.ReadOnlyField(source='count_replies')
-    user = PartialUserSerializer(read_only=True)
+    user = objUserSerializer(read_only=True)
     is_fan = SerializerMethodField()
     total_likes = serializers.ReadOnlyField()
     class Meta:
@@ -43,7 +58,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class CommentDetialSerializer(serializers.ModelSerializer):
     images = PictureSerializer(many=True)
-    user = PartialUserSerializer(read_only=True)
+    user = objUserSerializer(read_only=True)
     comments_count = serializers.ReadOnlyField(source='count_replies')
     is_fan = SerializerMethodField()
     total_likes = serializers.ReadOnlyField()
@@ -66,7 +81,7 @@ class CommentCreateSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     images = PictureSerializer(many=True)
-    user = PartialUserSerializer(read_only=True)
+    user = objUserSerializer(read_only=True)
     total_likes = serializers.ReadOnlyField()
     comments_count = serializers.ReadOnlyField(source='count_replies')
     is_fan = SerializerMethodField()
@@ -83,7 +98,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 class PostDetailSerializer(serializers.ModelSerializer):
     images = PictureSerializer(many=True)
-    user = PartialUserSerializer(read_only=True)
+    user = objUserSerializer(read_only=True)
     comments_count = serializers.ReadOnlyField(source='count_replies')
     total_likes = serializers.ReadOnlyField()
     #comments = CommentSerializer(many=True)

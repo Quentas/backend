@@ -51,6 +51,7 @@ from .serializers import (
     CommentDetialSerializer,
     FileUploadSerializer,
     PictureSerializer,
+    UserBioSerializer,
 )
 from .service import modify_input_for_multiple_files as modify
 
@@ -63,10 +64,10 @@ class PostViewSet(viewsets.ViewSet):
         queryset = Post.objects.all()
         # /posts/?username=admin
         if request.GET.get('username'):                                 
-            queryset = Post.objects.filter(user__username=request.GET.get('username'))
+            queryset = queryset.filter(user__username=request.GET.get('username'))
         # /posts/?liked_by=admin
         if request.GET.get('liked_by'):
-            queryset = Post.objects.filter(likes__username=request.GET.get('liked_by'))
+            queryset = queryset.filter(likes__username=request.GET.get('liked_by'))
         # cuts list of objects
         if request.GET.get('endpos'):
             endpos = int(request.GET.get('endpos'))
@@ -144,10 +145,10 @@ class CommentViewSet(viewsets.ViewSet):
         queryset = Comment.objects.all()
         # /comments/?username=admin
         if request.GET.get('username'):                                 
-            queryset = Comment.objects.filter(user__username=request.GET.get('username'))
+            queryset = queryset.filter(user__username=request.GET.get('username'))
         # /comments/?post_id=1
         if request.GET.get('post_id'):                                           
-            queryset = Comment.objects.filter(post__id=request.GET.get('post_id'))
+            queryset = queryset.filter(post__id=request.GET.get('post_id'))
         # cuts list of objects
         if request.GET.get('endpos'):
             endpos = int(request.GET.get('endpos'))
@@ -216,7 +217,18 @@ class UploadUserPhotoViewSet(viewsets.ViewSet):
             request.user.save()
             return Response(status=200)
         return Response(status=400)
-   
+
+class UserBioUpdateView(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated,]
+    serializer_class = UserBioSerializer
+
+    def partial_update(self, request):
+        raw_bio = request.data['bio']
+        if raw_bio:
+            request.user.bio = raw_bio
+            request.user.save()
+            return Response(status=200)
+        return Response(status=400)
 
 class ActivateUser(generics.GenericAPIView):
     permission_classes = [AllowAny,]

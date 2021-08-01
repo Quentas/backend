@@ -53,10 +53,8 @@ from .serializers import (
     PictureSerializer,
 )
 from .service import modify_input_for_multiple_files as modify
-from .mixins import LikedMixin
 
-
-class PostViewSet(LikedMixin, viewsets.ViewSet):
+class PostViewSet(viewsets.ViewSet):
 
     def list(self, request):
         self.permission_classes = [AllowAny,]
@@ -66,6 +64,9 @@ class PostViewSet(LikedMixin, viewsets.ViewSet):
         # /posts/?username=admin
         if request.GET.get('username'):                                 
             queryset = Post.objects.filter(user__username=request.GET.get('username'))
+        # /posts/?liked_by=admin
+        if request.GET.get('liked_by'):
+            queryset = Post.objects.filter(likes__username=request.GET.get('liked_by'))
         # cuts list of objects
         if request.GET.get('endpos'):
             endpos = int(request.GET.get('endpos'))
@@ -96,7 +97,6 @@ class PostViewSet(LikedMixin, viewsets.ViewSet):
             #print(request.data)
             return Response(status=400)
         '''
-
                          
     def retrieve(self, request, pk):
         self.permission_classes = [AllowAny,]
@@ -145,10 +145,9 @@ class CommentViewSet(viewsets.ViewSet):
         # /comments/?username=admin
         if request.GET.get('username'):                                 
             queryset = Comment.objects.filter(user__username=request.GET.get('username'))
-        # /comments/?comment_id=1
-        # //// is this necessary ???
-        if request.GET.get('comment_id'):                                           
-            queryset = Comment.objects.filter(id=request.GET.get('comment_id'))
+        # /comments/?post_id=1
+        if request.GET.get('post_id'):                                           
+            queryset = Comment.objects.filter(post__id=request.GET.get('post_id'))
         # cuts list of objects
         if request.GET.get('endpos'):
             endpos = int(request.GET.get('endpos'))

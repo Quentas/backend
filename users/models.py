@@ -52,7 +52,7 @@ class Post(models.Model):
 		return super(Post, self).save(*args, **kwargs)
 
 	@property
-	def count_replies(self):
+	def comments_count(self):
 		return Comment.objects.filter(post=self).count()
 
 	@property
@@ -81,7 +81,7 @@ class Comment(models.Model):
 		return super(Comment, self).save(*args, **kwargs)
 
 	@property
-	def count_replies(self):
+	def comments_count(self):
 		return Comment.objects.filter(parent=self).count()
 
 	@property

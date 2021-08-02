@@ -12,20 +12,19 @@ from .models import (
     Picture
 )
 
-class PartialUserSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Account
-        fields = ['username', 'profile_photo' ,'first_name', 'last_name', 'bio',]
-        read_only_fields = fields
-
 
 class objUserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Account
-        fields = ['username', 'profile_photo' ,'first_name', 'last_name',]
+        fields = ('username', 'profile_photo' ,'first_name', 'last_name',)
         read_only_fields = fields
+
+
+class PartialUserSerializer(objUserSerializer):
+    class Meta:
+        model = Account
+        fields = objUserSerializer.Meta.fields + ('bio',)
+        read_only_fields = fields        
 
 
 class UserBioSerializer(serializers.ModelSerializer):
@@ -40,15 +39,14 @@ class PictureSerializer(serializers.ModelSerializer):
         fields = ('image',)
         
 
-class CommentSerializer(serializers.ModelSerializer):
+class objSerializer(serializers.ModelSerializer):
     images = PictureSerializer(many=True)
-    comments_count = serializers.ReadOnlyField(source='count_replies')
+    comments_count = serializers.ReadOnlyField()
     user = objUserSerializer(read_only=True)
     is_fan = SerializerMethodField()
     total_likes = serializers.ReadOnlyField()
     class Meta:
-        model = Comment
-        fields = ('id', 'post', 'parent', 'user', 'content', 'date', 
+        fields = ('id', 'user', 'content', 'date', 
         'last_edited', 'images', 'comments_count', 'is_fan', 'total_likes',)
 
     def get_is_fan(self, obj):
@@ -56,20 +54,16 @@ class CommentSerializer(serializers.ModelSerializer):
         return is_fan(obj, user)
 
 
-class CommentDetialSerializer(serializers.ModelSerializer):
-    images = PictureSerializer(many=True)
-    user = objUserSerializer(read_only=True)
-    comments_count = serializers.ReadOnlyField(source='count_replies')
-    is_fan = SerializerMethodField()
-    total_likes = serializers.ReadOnlyField()
+class CommentSerializer(objSerializer):
     class Meta:
         model = Comment
-        fields = ('id', 'parent', 'user', 'content', 'date', 'last_edited',
-                         'images', 'is_fan', 'total_likes', 'comments_count',)
+        fields = objSerializer.Meta.fields + ('post', 'parent', )
 
-    def get_is_fan(self, obj):
-        user = self.context['request'].user
-        return is_fan(obj, user)
+
+class CommentDetialSerializer(objSerializer):
+    class Meta:
+        model = Comment
+        fields = objSerializer.Meta.fields + ('post', 'parent', )
 
 
 class CommentCreateSerializer(serializers.ModelSerializer):
@@ -79,39 +73,17 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         fields = ["post", "content"]
 
 
-class PostSerializer(serializers.ModelSerializer):
-    images = PictureSerializer(many=True)
-    user = objUserSerializer(read_only=True)
-    total_likes = serializers.ReadOnlyField()
-    comments_count = serializers.ReadOnlyField(source='count_replies')
-    is_fan = SerializerMethodField()
-
+class PostSerializer(objSerializer):
     class Meta:
         model = Post
-        fields = ('id', 'user', 'content', 'date', 'last_edited',
-         'images', 'comments_count', 'total_likes', 'is_fan', )   
-    
-    def get_is_fan(self, obj):
-        user = self.context['request'].user
-        return is_fan(obj, user)
+        fields = objSerializer.Meta.fields
 
 
-class PostDetailSerializer(serializers.ModelSerializer):
-    images = PictureSerializer(many=True)
-    user = objUserSerializer(read_only=True)
-    comments_count = serializers.ReadOnlyField(source='count_replies')
-    total_likes = serializers.ReadOnlyField()
-    #comments = CommentSerializer(many=True)
-    is_fan = SerializerMethodField()
+class PostDetailSerializer(objSerializer):
     class Meta:
         model = Post
-        fields = ('id', 'user', 'content', 'date', 'last_edited', 'images', 
-        'comments_count', 'total_likes', 'is_fan', ) 
+        fields = objSerializer.Meta.fields
 
-    def get_is_fan(self, obj):
-        user = self.context['request'].user
-        return is_fan(obj, user)
-          
     
 class PostCreateSerializer(serializers.ModelSerializer): 
     #images = PictureSerializer(many=True)

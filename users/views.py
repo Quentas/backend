@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from django.http.response import HttpResponse
 import requests
@@ -77,27 +78,36 @@ class PostViewSet(viewsets.ViewSet):
                                         many=True, context={'request': request})
         return Response(serializer.data)
 
-    def create(self, request):      
+    def create(self, request):
+
         self.permission_classes = [IsAuthenticated,]
+        '''
         created_post = PostCreateSerializer(data=request.data)
         if created_post.is_valid():
             created_post.save(user=request.user)
             return Response(status=201)
         else:
+            print(request.data)
+            print(created_post)
             return Response(status=400)
         '''
-        if request.method == 'POST' and request.POST.get('content'):  # check if not empty
+        if request.method == 'POST' and request.data['content']:  # check if not empty
+            images = request.FILES.getlist('image')
+            if len(images) > 6: 
+                return Response({"Image upload error": "Too many images uploaded. Maximum amount is 6"}, status=400)
+            for image in images:  ##  fistly check all images
+                if image.size > 2000000:  ## 2 MB
+                    return Response({"Image upload error": "Too big images uploaded. Maximum size is 2 MB"}, status=400)
+                if not Path(str(image)).suffix in {'.jpg', '.jpeg', '.png'}:
+                    return Response({"Image upload error": "Images of formats jpg, jpeg, png are supported"}, status=400)
             post = Post.objects.create(user=request.user, content=request.data['content'])
-            images = request.FILES.getlist('images')
-            for image in images:
-                if Path(str(image)).suffix in {'.jpg', '.jpeg', '.png'}:        
-                    img_instance = Picture.objects.create(image=image)
-                    post.images.add(img_instance)
+            for image in images:  
+                img_instance = Picture.objects.create(image=image)
+                post.images.add(img_instance)
             return Response(status=201)
         else:
-            #print(request.data)
-            return Response(status=400)
-        '''
+            return Response({"Error here": "1"}, status=400)
+        #'''
                          
     def retrieve(self, request, pk):
         self.permission_classes = [AllowAny,]

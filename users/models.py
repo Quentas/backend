@@ -28,7 +28,7 @@ class Account(AbstractUser):
 	'''
 
 class Picture(models.Model):
-	image = models.ImageField(upload_to='pictures', blank=True) # should it be blank ???
+	image = models.ImageField(upload_to='pictures', blank=False) 
 
 
 class Post(models.Model):

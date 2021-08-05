@@ -1,7 +1,8 @@
 from django_filters import rest_framework as filters
-from .models import Post, Account
+from .models import Post, Account, Picture
 from django.contrib.contenttypes.models import ContentType
-
+from rest_framework.response import Response
+from pathlib import Path
 
 class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):
     pass
@@ -38,3 +39,16 @@ def get_fans(obj):
         likes__content_type=obj_type, likes__object_id=obj.id)
 
 
+def validate_images(images):
+    if len(images) > 6: 
+        return Response({"Image upload error": "Too many images uploaded. Maximum amount is 6"}, status=400)
+    for image in images:  ##  fistly check all images
+        print(image, end='\n')
+        if image.size > 2000000:  ## 2 MB
+            return Response({"Image upload error": "Too big images uploaded. Maximum size is 2 MB"}, status=400)
+        if not Path(str(image)).suffix in {'.jpg', '.jpeg', '.png'}:
+            return Response({"Image upload error": "Images of formats jpg, jpeg, png are supported"}, status=400)
+    for image in images:  
+        #Picture.objects.create(image=image)
+        pass
+    return True

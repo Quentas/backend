@@ -86,12 +86,12 @@ class PostDetailSerializer(objSerializer):
 
     
 class PostCreateSerializer(serializers.ModelSerializer): 
-    #images = PictureSerializer(many=True)
+    images = PictureSerializer(many=True)
     class Meta:
         model = Post
         model.date = serializers.DateTimeField() 
-        #fields = ['content', 'images',]
-        fields = ['content',]
+        fields = ['content', 'images',]
+        #fields = ['content',]
 
     ## write create method and _validateImages_ method
 

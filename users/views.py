@@ -246,9 +246,10 @@ class UserDataViewSet(viewsets.ViewSet):
         """
         self.permission_classes = [IsAuthenticated,]
         self.serializer_class = FileUploadSerializer
+        if not request.FILES.getlist('photo'):
+            return Response({"Image upload error" : "Image must be uploaded"}, status=400)            
         file_uploaded = request.FILES.getlist('photo')[0]
-        file_extension = Path(str(file_uploaded)).suffix
-        if file_extension in {'.jpg', '.jpeg', '.png'}:
+        if Path(str(file_uploaded)).suffix in {'.jpg', '.jpeg', '.png'}:
             request.user.profile_photo = file_uploaded
             request.user.save()
             return Response(status=200)

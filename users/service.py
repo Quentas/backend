@@ -43,12 +43,10 @@ def validate_images(images):
     if len(images) > 6: 
         return Response({"Image upload error": "Too many images uploaded. Maximum amount is 6"}, status=400)
     for image in images:  ##  fistly check all images
-        print(image, end='\n')
+        print(image)
+        print(image.size, end='\n')
         if image.size > 2000000:  ## 2 MB
             return Response({"Image upload error": "Too big images uploaded. Maximum size is 2 MB"}, status=400)
         if not Path(str(image)).suffix in {'.jpg', '.jpeg', '.png'}:
             return Response({"Image upload error": "Images of formats jpg, jpeg, png are supported"}, status=400)
-    for image in images:  
-        #Picture.objects.create(image=image)
-        pass
     return True

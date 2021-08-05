@@ -16,7 +16,7 @@ class Account(AbstractUser):
 
 	class Meta:
 		verbose_name = 'Account'	
-	'''
+	
 	def save(self, *args, **kwargs):
 		# Resizing profile image
 		super().save(*args, **kwargs)
@@ -25,7 +25,7 @@ class Account(AbstractUser):
 			output_size = (200, 200)
 			img.thumbnail(output_size)
 			img.save(self.profile_photo.path)
-	'''
+	
 
 class Picture(models.Model):
 	image = models.ImageField(upload_to='pictures', blank=False) 

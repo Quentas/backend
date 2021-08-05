@@ -3,10 +3,9 @@ from django.urls import path
 from .views import (
     PostViewSet,
     CommentViewSet,
-    UploadUserPhotoViewSet,
-    ActivateUser,
-    UserBioUpdateView,
+    UserDataViewSet,
 )
+
 
 urlpatterns = [
     path("posts/", PostViewSet.as_view(
@@ -40,14 +39,16 @@ urlpatterns = [
     })),
 
 
-    path("profile_photo/", UploadUserPhotoViewSet.as_view(
+    path("profile_photo/", UserDataViewSet.as_view(
         {
             'post': 'create',
         })),
-    path("user_bio/", UserBioUpdateView.as_view(
+    path("user_bio/", UserDataViewSet.as_view(
         {
             'put': 'partial_update',
         })),
-    path("activate/<uid>/<token>/", ActivateUser.as_view()),
+    path("activate/<uid>/<token>/", UserDataViewSet.as_view({
+            'get' : 'get',
+    })),
 
 ]

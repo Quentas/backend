@@ -119,13 +119,20 @@ class PostViewSet(viewsets.ViewSet):
         self.permission_classes = [IsAuthenticated,]
         post = get_object_or_404(Post, id=pk)
         if request.user == post.user:
+            images = request.FILES.getlist('image')
+            if len(images) > 6: 
+                return Response({"Image upload error": "Too many images uploaded. Maximum amount is 6"}, status=400)
+            for image in images:  ##  fistly check all images
+                if image.size > 2000000:  ## 2 MB
+                    return Response({"Image upload error": "Too big images uploaded. Maximum size is 2 MB"}, status=400)
+                if not Path(str(image)).suffix in {'.jpg', '.jpeg', '.png'}:
+                    return Response({"Image upload error": "Images of formats jpg, jpeg, png are supported"}, status=400)
             post.content = request.data['content']
-            #if request.data['images']:
-            #    post.images = request.data['images']
-            post.save()
+            for image in images:  
+                img_instance = Picture.objects.create(image=image)
+                post.images.add(img_instance)
             return Response(status=200)
-        else:
-            return Response(status=403)
+        return Response(status=403)
 
     def destroy(self, request, pk):
         self.permission_classes = [IsAuthenticated,]
@@ -216,33 +223,13 @@ class CommentViewSet(viewsets.ViewSet):
         return Response(status=200)
 
 
-class UploadUserPhotoViewSet(viewsets.ViewSet):
-    permission_classes = [IsAuthenticated,]
-    serializer_class = FileUploadSerializer
-    def create(self, request):
-        file_uploaded = request.FILES.get('photo')
-        file_extension = Path(str(file_uploaded)).suffix
-        if file_extension in {'.jpg', '.jpeg', '.png'}:
-            request.user.profile_photo = file_uploaded
-            request.user.save()
-            return Response(status=200)
-        return Response(status=400)
 
-class UserBioUpdateView(viewsets.ViewSet):
-    permission_classes = [IsAuthenticated,]
-    serializer_class = UserBioSerializer
+class UserDataViewSet(viewsets.ViewSet):
 
-    def partial_update(self, request):
-        raw_bio = request.data['bio']
-        if raw_bio:
-            request.user.bio = raw_bio
-            request.user.save()
-            return Response(status=200)
-        return Response(status=400)
-
-class ActivateUser(generics.GenericAPIView):
-    permission_classes = [AllowAny,]
     def get(self, request, uid, token, format = None):
+        """
+        """
+        self.permission_classes = [AllowAny,]
         payload = {'uid': uid, 'token': token}
         #url = "https://fierce-dusk-92502.herokuapp.com/auth/users/activation/"
         url = "http://127.0.0.1:8000/auth/users/activation/"
@@ -253,6 +240,31 @@ class ActivateUser(generics.GenericAPIView):
             return HttpResponseRedirect("http://127.0.0.1:8000")
         else:
             return Response(response.json())
+
+    def create(self, request):
+        """Upload `user` avatar
+        """
+        self.permission_classes = [IsAuthenticated,]
+        self.serializer_class = FileUploadSerializer
+        file_uploaded = request.FILES.getlist('photo')[0]
+        file_extension = Path(str(file_uploaded)).suffix
+        if file_extension in {'.jpg', '.jpeg', '.png'}:
+            request.user.profile_photo = file_uploaded
+            request.user.save()
+            return Response(status=200)
+        return Response(status=400)
+
+
+    def partial_update(self, request):
+        """Update `user` `bio`
+        """
+        raw_bio = request.data['bio']
+        if raw_bio:
+            request.user.bio = raw_bio
+            request.user.save()
+            return Response(status=200)
+        return Response(status=400)
+
 
 
 def index(request):

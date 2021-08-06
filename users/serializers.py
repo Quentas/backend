@@ -1,6 +1,6 @@
 from django.db.migrations.operations import fields
 from rest_framework.fields import SerializerMethodField
-from users.service import is_fan
+from users.service import is_booked, is_fan
 from rest_framework import serializers
 
 from djoser.serializers import UserCreateSerializer as BaseUserRegistrationSerializer
@@ -44,14 +44,20 @@ class objSerializer(serializers.ModelSerializer):
     comments_count = serializers.ReadOnlyField()
     user = objUserSerializer(read_only=True)
     is_fan = SerializerMethodField()
+    is_booked = SerializerMethodField()
     total_likes = serializers.ReadOnlyField()
     class Meta:
         fields = ('id', 'user', 'content', 'date', 
-        'last_edited', 'images', 'comments_count', 'is_fan', 'total_likes',)
+        'last_edited', 'images', 'comments_count', 'is_fan', 'total_likes', 'is_booked',)
 
     def get_is_fan(self, obj):
         user = self.context['request'].user
         return is_fan(obj, user)
+
+    def get_is_booked(self, obj):
+        user = self.context['request'].user
+        return is_booked(obj, user)
+    
 
 
 class CommentSerializer(objSerializer):

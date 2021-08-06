@@ -30,6 +30,15 @@ def is_fan(obj, user) -> bool:
         return False
     return obj.likes.filter(username=user).exists()
 
+def is_booked(obj, user) -> bool:
+    """
+    Проверяет, репостнул ли `user` `obj`.
+    """
+    if not user.is_authenticated:
+        return False
+    return obj.bookmark.filter(username=user).exists()
+
+
 def get_fans(obj):
     """
     Получает всех пользователей, которые лайкнули `obj`.

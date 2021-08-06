@@ -38,6 +38,7 @@ class Post(models.Model):
 	last_edited = models.DateTimeField(editable=False)
 	images = models.ManyToManyField(Picture, related_name='post_images', blank=True)
 	likes = models.ManyToManyField(Account, related_name='post_like', blank=True)
+	bookmark = models.ManyToManyField(Account, related_name='booked_post', blank=True)
 	
 	def recently_published(self):
 		return self.date >= (timezone.now() - datetime.timedelta(days = 1))
@@ -69,6 +70,7 @@ class Comment(models.Model):
 	images = models.ManyToManyField(Picture, related_name='comment_images', blank=True)
 	parent = models.ForeignKey("self", null=True, blank=True, on_delete=CASCADE)
 	likes = models.ManyToManyField(Account, related_name='comment_like', blank=True)
+	bookmark = models.ManyToManyField(Account, related_name='booked_comment', blank=True)
 
 	
 	def __str__(self):

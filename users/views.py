@@ -69,6 +69,9 @@ class PostViewSet(viewsets.ViewSet):
         # /posts/?liked_by=admin
         if request.GET.get('liked_by'):
             queryset = queryset.filter(likes__username=request.GET.get('liked_by'))
+        # /posts/?booked_by=admin
+        if request.GET.get('booked_by'):
+            queryset = queryset.filter(bookmark__username=request.GET.get('booked_by'))
         # cuts list of objects
         if request.GET.get('endpos'):
             endpos = int(request.GET.get('endpos'))
@@ -98,7 +101,7 @@ class PostViewSet(viewsets.ViewSet):
             for image in images:  ##  fistly check all images
                 if image.size > 2000000:  ## 2 MB
                     return Response({"Image upload error": "Too big images uploaded. Maximum size is 2 MB"}, status=400)
-                if not Path(str(image)).suffix in {'.jpg', '.jpeg', '.png'}:
+                if not Path(str(image)).suffix in {'.jpg', '.jpeg', '.png', '.gif'}:
                     return Response({"Image upload error": "Images of formats jpg, jpeg, png are supported"}, status=400)
             post = Post.objects.create(user=request.user, content=request.data['content'])
             for image in images:  
@@ -125,7 +128,7 @@ class PostViewSet(viewsets.ViewSet):
             for image in images:  ##  fistly check all images
                 if image.size > 2000000:  ## 2 MB
                     return Response({"Image upload error": "Too big images uploaded. Maximum size is 2 MB"}, status=400)
-                if not Path(str(image)).suffix in {'.jpg', '.jpeg', '.png'}:
+                if not Path(str(image)).suffix in {'.jpg', '.jpeg', '.png', '.gif'}:
                     return Response({"Image upload error": "Images of formats jpg, jpeg, png are supported"}, status=400)
             post.content = request.data['content']
             for image in images:  
@@ -152,6 +155,14 @@ class PostViewSet(viewsets.ViewSet):
         post.likes.add(request.user)
         return Response(status=200)
 
+    def bookmark(self, request, pk):
+        self.permission_classes = [IsAuthenticated,]
+        post = get_object_or_404(Post, id=pk)
+        if post.bookmark.filter(username=request.user).exists():
+            post.bookmark.remove(request.user)
+            return Response(status=204)
+        post.bookmark.add(request.user)
+        return Response(status=200)
 
 class CommentViewSet(viewsets.ViewSet):
 
@@ -166,6 +177,9 @@ class CommentViewSet(viewsets.ViewSet):
         # /comments/?post_id=1
         if request.GET.get('post_id'):                                           
             queryset = queryset.filter(post__id=request.GET.get('post_id'))
+        # /comments/?booked_by=admin
+        if request.GET.get('booked_by'):
+            queryset = queryset.filter(bookmark__username=request.GET.get('booked_by'))
         # cuts list of objects
         if request.GET.get('endpos'):
             endpos = int(request.GET.get('endpos'))
@@ -222,6 +236,14 @@ class CommentViewSet(viewsets.ViewSet):
         comment.likes.add(request.user)
         return Response(status=200)
 
+    def bookmark(self, request, pk):
+        self.permission_classes = [IsAuthenticated,]
+        comment = get_object_or_404(Comment, id=pk)
+        if comment.bookmark.filter(username=request.user).exists():
+            comment.bookmark.remove(request.user)
+            return Response(status=204)
+        comment.bookmark.add(request.user)
+        return Response(status=200)
 
 
 class UserDataViewSet(viewsets.ViewSet):

@@ -24,6 +24,9 @@ urlpatterns = [
     path("posts/<pk>/bookmark/", PostViewSet.as_view({
             'post' : 'bookmark',
     })),
+    path("posts/my_bookmarks/", PostViewSet.as_view({
+            'get' : 'my_bookmarks',
+    })),
 
 
     path("comments/", CommentViewSet.as_view(
@@ -43,6 +46,10 @@ urlpatterns = [
     path("comments/<pk>/bookmark/", CommentViewSet.as_view({
             'post' : 'bookmark',
     })),
+    path("comments/my_bookmarks/", CommentViewSet.as_view({
+            'get' : 'my_bookmarks',
+    })),
+
 
     path("profile_photo/", UserDataViewSet.as_view(
         {

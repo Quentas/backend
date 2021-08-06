@@ -69,9 +69,6 @@ class PostViewSet(viewsets.ViewSet):
         # /posts/?liked_by=admin
         if request.GET.get('liked_by'):
             queryset = queryset.filter(likes__username=request.GET.get('liked_by'))
-        # /posts/?booked_by=admin
-        if request.GET.get('booked_by'):
-            queryset = queryset.filter(bookmark__username=request.GET.get('booked_by'))
         # cuts list of objects
         if request.GET.get('endpos'):
             endpos = int(request.GET.get('endpos'))
@@ -164,6 +161,22 @@ class PostViewSet(viewsets.ViewSet):
         post.bookmark.add(request.user)
         return Response(status=200)
 
+    def my_bookmarks(self, request):
+        self.permission_classes = [IsAuthenticated,]
+        if not request.user.is_authenticated:
+            return Response(status=403)
+        queryset = request.user.booked_post.all()
+        endpos = None
+        startpos = None
+        # cuts list of objects
+        if request.GET.get('endpos'):
+            endpos = int(request.GET.get('endpos'))
+        if request.GET.get('startpos'):
+            startpos = int(request.GET.get('startpos'))
+        serializer = PostSerializer(queryset.order_by("-date")[startpos:endpos], 
+                                        many=True, context={'request': request})
+        return Response(serializer.data)
+
 class CommentViewSet(viewsets.ViewSet):
 
     def list(self, request):
@@ -177,9 +190,6 @@ class CommentViewSet(viewsets.ViewSet):
         # /comments/?post_id=1
         if request.GET.get('post_id'):                                           
             queryset = queryset.filter(post__id=request.GET.get('post_id'))
-        # /comments/?booked_by=admin
-        if request.GET.get('booked_by'):
-            queryset = queryset.filter(bookmark__username=request.GET.get('booked_by'))
         # cuts list of objects
         if request.GET.get('endpos'):
             endpos = int(request.GET.get('endpos'))
@@ -245,6 +255,21 @@ class CommentViewSet(viewsets.ViewSet):
         comment.bookmark.add(request.user)
         return Response(status=200)
 
+    def my_bookmarks(self, request):
+        self.permission_classes = [IsAuthenticated,]
+        if not request.user.is_authenticated:
+            return Response(status=403)
+        queryset = request.user.booked_comment.all()
+        endpos = None
+        startpos = None
+        # cuts list of objects
+        if request.GET.get('endpos'):
+            endpos = int(request.GET.get('endpos'))
+        if request.GET.get('startpos'):
+            startpos = int(request.GET.get('startpos'))
+        serializer = PostSerializer(queryset.order_by("-date")[startpos:endpos], 
+                                        many=True, context={'request': request})
+        return Response(serializer.data)
 
 class UserDataViewSet(viewsets.ViewSet):
 

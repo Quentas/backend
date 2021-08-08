@@ -21,11 +21,20 @@ class objUserSerializer(serializers.ModelSerializer):
 
 
 class PartialUserSerializer(objUserSerializer):
+    user_posts_count = SerializerMethodField()
+    user_comments_count = SerializerMethodField()
     class Meta:
         model = Account
-        fields = objUserSerializer.Meta.fields + ('bio',)
+        fields = objUserSerializer.Meta.fields + ('bio', 'user_posts_count', 'user_comments_count',)
         read_only_fields = fields        
+    
+    def get_user_posts_count(self, obj):
+        user = self.context['request'].user
+        return Post.objects.filter(user=user).count()
 
+    def get_user_comments_count(self, obj):
+        user = self.context['request'].user
+        return Comment.objects.filter(user=user).count()
 
 class UserBioSerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,7 +45,7 @@ class UserBioSerializer(serializers.ModelSerializer):
 class PictureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Picture
-        fields = ('image',)
+        fields = ('id', 'image',)
         
 
 class objSerializer(serializers.ModelSerializer):

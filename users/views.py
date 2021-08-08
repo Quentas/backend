@@ -1,4 +1,5 @@
 import json
+from os import stat
 from pathlib import Path
 from django.http.response import HttpResponse
 import requests
@@ -54,7 +55,8 @@ from .serializers import (
     PictureSerializer,
     UserBioSerializer,
 )
-from .service import modify_input_for_multiple_files as modify
+from .service import is_stored_on_server as is_stored, modify_input_for_multiple_files as modify
+
 
 class PostViewSet(viewsets.ViewSet):
 
@@ -119,18 +121,40 @@ class PostViewSet(viewsets.ViewSet):
         self.permission_classes = [IsAuthenticated,]
         post = get_object_or_404(Post, id=pk)
         if request.user == post.user:
-            images = request.FILES.getlist('image')
+            if not request.data['content'] or len(request.data['content'])==0:
+                return Response({"Content error": "Post must contain 'content' field"}, status=400)
+            old_images = post.images.values('id')
+            for img in old_images:
+                print(img['id'])
+                pict = Picture.objects.get(id=img['id'])
+                print(pict)
+            for img in request.POST.getlist('image'):
+                print(img)
+
+            images = request.POST.getlist('image')
             if len(images) > 6: 
                 return Response({"Image upload error": "Too many images uploaded. Maximum amount is 6"}, status=400)
+
+            images_backup = request.POST.getlist('image')
+            for img in images:  ## filter already stored on server
+                print(img)
+                if is_stored(img):
+                   images.remove(img) 
+            return Response({"Isn't ready yet": "I'm working on it"}, status=400)
+            
             for image in images:  ##  fistly check all images
                 if image.size > 2000000:  ## 2 MB
                     return Response({"Image upload error": "Too big images uploaded. Maximum size is 2 MB"}, status=400)
                 if not Path(str(image)).suffix in {'.jpg', '.jpeg', '.png', '.gif'}:
                     return Response({"Image upload error": "Images of formats jpg, jpeg, png are supported"}, status=400)
             post.content = request.data['content']
+
+            ## here delete unwanted imgs
+
             for image in images:  
                 img_instance = Picture.objects.create(image=image)
                 post.images.add(img_instance)
+            
             return Response(status=200)
         return Response(status=403)
 

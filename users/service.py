@@ -59,3 +59,9 @@ def validate_images(images):
         if not Path(str(image)).suffix in {'.jpg', '.jpeg', '.png'}:
             return Response({"Image upload error": "Images of formats jpg, jpeg, png are supported"}, status=400)
     return True
+
+def is_stored_on_server(image):
+    try:
+        return image.startswith('http://127.0.0.1:8000/media/pictures/') or image.startswith('https://fierce-dusk-92502.herokuapp.com/media/pictures/')
+    except:
+        return False

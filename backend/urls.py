@@ -18,17 +18,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from users.views import index
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
     path('auth/', include('djoser.urls.jwt')),
-    path('api/v1/', include('users.urls')),
-    path('', index, name='index')
-    
+    path('api/v1/', include('users.urls')),    
 ]
 
 if settings.DEBUG:

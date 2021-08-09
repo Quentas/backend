@@ -21,20 +21,13 @@ class objUserSerializer(serializers.ModelSerializer):
 
 
 class PartialUserSerializer(objUserSerializer):
-    user_posts_count = SerializerMethodField()
-    user_comments_count = SerializerMethodField()
+    user_posts_count = serializers.ReadOnlyField()
+    user_comments_count = serializers.ReadOnlyField()
     class Meta:
         model = Account
         fields = objUserSerializer.Meta.fields + ('bio', 'user_posts_count', 'user_comments_count',)
         read_only_fields = fields        
-    
-    def get_user_posts_count(self, obj):
-        user = self.context['request'].user
-        return Post.objects.filter(user=user).count()
 
-    def get_user_comments_count(self, obj):
-        user = self.context['request'].user
-        return Comment.objects.filter(user=user).count()
 
 class UserBioSerializer(serializers.ModelSerializer):
     class Meta:

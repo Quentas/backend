@@ -83,16 +83,7 @@ class PostViewSet(viewsets.ViewSet):
     def create(self, request):
 
         self.permission_classes = [IsAuthenticated,]
-        '''
-        created_post = PostCreateSerializer(data=request.data)
-        if created_post.is_valid():
-            created_post.save(user=request.user)
-            return Response(status=201)
-        else:
-            print(request.data)
-            print(created_post)
-            return Response(status=400)
-        '''
+
         if request.method == 'POST' and request.data['content']:  # check if not empty
             images = request.FILES.getlist('image')
             if len(images) > 6: 
@@ -108,7 +99,7 @@ class PostViewSet(viewsets.ViewSet):
                 post.images.add(img_instance)
             return Response(status=201)
         else:
-            return Response({"Error here": "1"}, status=400)
+            return Response({"Error": "No 'content' field or no POST request"}, status=400)
         #'''
                          
     def retrieve(self, request, pk):
@@ -130,11 +121,7 @@ class PostViewSet(viewsets.ViewSet):
                     post.images.get(id=img).delete()
             images = request.FILES.getlist('image')
             if len(images) > 6: 
-                return Response({"Image upload error": "Too many images uploaded. Maximum amount is 6"}, status=400)
-            for img in images:  ## filter already stored on server (??)
-                print(img)
-                if is_stored(img):
-                   images.remove(img) 
+                return Response({"Image upload error": "Too many images uploaded. Maximum amount is 6"}, status=400) 
             for image in images:  ##  fistly check all uploaded images
                 if image.size > 2000000:  ## 2 MB
                     return Response({"Image upload error": "Too big images uploaded. Maximum size is 2 MB"}, status=400)
@@ -329,9 +316,5 @@ class UserDataViewSet(viewsets.ViewSet):
             request.user.save()
             return Response(status=200)
         return Response(status=400)
-
-
-def index(request):
-    return render(request, 'index4.html')
 
 

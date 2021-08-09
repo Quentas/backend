@@ -27,7 +27,14 @@ class Account(AbstractUser):
 			output_size = (200, 200)
 			img.thumbnail(output_size)
 			img.save(self.profile_photo.path)
-	
+
+	@property
+	def user_posts_count(self):
+		return Post.objects.filter(user__username=self.username).count()
+
+	@property
+	def user_comments_count(self):
+		return Comment.objects.filter(user__username=self.username).count()
 
 class Picture(models.Model):
 	image = models.ImageField(upload_to='pictures', blank=False) 

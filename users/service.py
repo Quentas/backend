@@ -1,3 +1,4 @@
+from django.http import response
 from django_filters import rest_framework as filters
 from .models import Post, Account, Picture
 from django.contrib.contenttypes.models import ContentType
@@ -49,6 +50,8 @@ def get_fans(obj):
 
 
 def validate_images(images):
+    print(images)
+    return Response(status=400)
     if len(images) > 6: 
         return Response({"Image upload error": "Too many images uploaded. Maximum amount is 6"}, status=400)
     for image in images:  ##  fistly check all images

@@ -30,13 +30,6 @@ class PartialUserSerializer(objUserSerializer):
         read_only_fields = fields        
 
 
-class UserBioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Account
-        fields = ('bio',)
-
-
-
 class DetailUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account

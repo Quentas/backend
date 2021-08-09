@@ -115,12 +115,15 @@ class PostViewSet(viewsets.ViewSet):
             if not request.data['content'] or len(request.data['content'])==0:
                 return Response({"Content error": "Post must contain 'content' field"}, status=400)
             old_images = post.images.values('id')
+            old_images_count = post.images.all().count()
+            deleted_imgs_count = 0
             img_list = [img['id'] for img in old_images]
             for img in request.POST.getlist('deleted'):   ## delete unwanted images
                 if int(img) in img_list:
+                    deleted_imgs_count += 1
                     post.images.get(id=img).delete()
             images = request.FILES.getlist('image')
-            if len(images) > 6: 
+            if len(images) + old_images_count - deleted_imgs_count > 6: 
                 return Response({"Image upload error": "Too many images uploaded. Maximum amount is 6"}, status=400) 
             for image in images:  ##  fistly check all uploaded images
                 if image.size > 2000000:  ## 2 MB

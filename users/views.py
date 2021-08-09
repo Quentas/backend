@@ -53,7 +53,7 @@ from .serializers import (
     CommentDetialSerializer,
     FileUploadSerializer,
     PictureSerializer,
-    UserBioSerializer,
+    UserDataUpdateSerializer,
 )
 from .service import is_stored_on_server as is_stored, modify_input_for_multiple_files as modify
 
@@ -318,15 +318,17 @@ class UserDataViewSet(viewsets.ViewSet):
 
 
     def partial_update(self, request):
-        """Update `user` `bio`
+        """Update `user` fields `bio`, `first_name` and `last_name`
         """
-        raw_bio = request.data['bio']
-        if raw_bio:
-            request.user.bio = raw_bio
+        self.permission_classes = [IsAuthenticated,]
+        serializer = UserDataUpdateSerializer(request.data)
+        if serializer.is_valid:
+            request.user.bio = serializer.data['bio']
+            request.user.first_name = serializer.data['first_name']
+            request.user.last_name = serializer.data['last_name']
             request.user.save()
             return Response(status=200)
         return Response(status=400)
-
 
 
 def index(request):

@@ -55,7 +55,7 @@ urlpatterns = [
         {
             'post': 'create',
         })),
-    path("user_bio/", UserDataViewSet.as_view(
+    path("user_data/", UserDataViewSet.as_view(
         {
             'put': 'partial_update',
         })),

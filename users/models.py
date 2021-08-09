@@ -13,6 +13,8 @@ class Account(AbstractUser):
 	email = models.EmailField(unique=True, blank=False)
 	profile_photo = models.ImageField(upload_to='profile_images', default='profile_images/default.jpg')
 	bio = models.TextField('bio', max_length=200, blank=True)
+	first_name = models.CharField(blank=True, max_length=15, verbose_name='first name')
+	last_name = models.CharField(blank=True, max_length=15, verbose_name='last name')
 
 	class Meta:
 		verbose_name = 'Account'	

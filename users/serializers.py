@@ -42,6 +42,19 @@ class UserBioSerializer(serializers.ModelSerializer):
         fields = ('bio',)
 
 
+
+class DetailUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ('id', 'username', 'first_name', 'last_name', 'profile_photo', 'bio',)
+
+
+class UserDataUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ('bio', 'first_name', 'last_name',)
+
+
 class PictureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Picture
@@ -109,12 +122,6 @@ class PostCreateSerializer(serializers.ModelSerializer):
         #fields = ['content',]
 
     ## write create method and _validateImages_ method
-
-
-class DetailUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Account
-        fields = ('id', 'username', 'first_name', 'last_name', 'profile_photo', 'bio',)
 
 
 class FileUploadSerializer(serializers.Serializer):

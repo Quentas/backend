@@ -124,37 +124,27 @@ class PostViewSet(viewsets.ViewSet):
             if not request.data['content'] or len(request.data['content'])==0:
                 return Response({"Content error": "Post must contain 'content' field"}, status=400)
             old_images = post.images.values('id')
-            for img in old_images:
-                print(img['id'])
-                pict = Picture.objects.get(id=img['id'])
-                print(pict)
-            for img in request.POST.getlist('image'):
-                print(img)
-
-            images = request.POST.getlist('image')
+            img_list = [img['id'] for img in old_images]
+            for img in request.POST.getlist('deleted'):   ## delete unwanted images
+                if int(img) in img_list:
+                    post.images.get(id=img).delete()
+            images = request.FILES.getlist('image')
             if len(images) > 6: 
                 return Response({"Image upload error": "Too many images uploaded. Maximum amount is 6"}, status=400)
-
-            images_backup = request.POST.getlist('image')
-            for img in images:  ## filter already stored on server
+            for img in images:  ## filter already stored on server (??)
                 print(img)
                 if is_stored(img):
                    images.remove(img) 
-            return Response({"Isn't ready yet": "I'm working on it"}, status=400)
-            
-            for image in images:  ##  fistly check all images
+            for image in images:  ##  fistly check all uploaded images
                 if image.size > 2000000:  ## 2 MB
                     return Response({"Image upload error": "Too big images uploaded. Maximum size is 2 MB"}, status=400)
                 if not Path(str(image)).suffix in {'.jpg', '.jpeg', '.png', '.gif'}:
                     return Response({"Image upload error": "Images of formats jpg, jpeg, png are supported"}, status=400)
             post.content = request.data['content']
-
-            ## here delete unwanted imgs
-
             for image in images:  
                 img_instance = Picture.objects.create(image=image)
                 post.images.add(img_instance)
-            
+            post.save()
             return Response(status=200)
         return Response(status=403)
 

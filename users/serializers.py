@@ -114,7 +114,7 @@ class PostCreateSerializer(serializers.ModelSerializer):
 class DetailUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ('id', 'username', 'first_name', 'last_name', 'profile_photo',)
+        fields = ('id', 'username', 'first_name', 'last_name', 'profile_photo', 'bio',)
 
 
 class FileUploadSerializer(serializers.Serializer):

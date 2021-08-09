@@ -194,6 +194,9 @@ class CommentViewSet(viewsets.ViewSet):
         # /comments/?post_id=1
         if request.GET.get('post_id'):                                           
             queryset = queryset.filter(post__id=request.GET.get('post_id'))
+        # /comments/?parent_id=1
+        if request.GET.get('parent_id'):                                           
+            queryset = queryset.filter(parent__id=request.GET.get('parent_id'))
         # cuts list of objects
         if request.GET.get('endpos'):
             endpos = int(request.GET.get('endpos'))

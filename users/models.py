@@ -36,6 +36,10 @@ class Account(AbstractUser):
 	def user_comments_count(self):
 		return Comment.objects.filter(user__username=self.username).count()
 
+	@property
+	def user_likes_count(self):
+		return self.post_like.count() + self.comment_like.count()
+
 class Picture(models.Model):
 	image = models.ImageField(upload_to='pictures', blank=False) 
 

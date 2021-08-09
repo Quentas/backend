@@ -23,9 +23,10 @@ class objUserSerializer(serializers.ModelSerializer):
 class PartialUserSerializer(objUserSerializer):
     user_posts_count = serializers.ReadOnlyField()
     user_comments_count = serializers.ReadOnlyField()
+    user_likes_count = serializers.ReadOnlyField()
     class Meta:
         model = Account
-        fields = objUserSerializer.Meta.fields + ('bio', 'user_posts_count', 'user_comments_count',)
+        fields = objUserSerializer.Meta.fields + ('bio', 'user_posts_count', 'user_comments_count', 'user_likes_count',)
         read_only_fields = fields        
 
 

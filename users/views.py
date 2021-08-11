@@ -1,7 +1,9 @@
+from datetime import date, datetime, timedelta
 import json
 from os import stat
 from pathlib import Path
 from django.http.response import HttpResponse
+from django.utils import timezone
 import requests
 from django.shortcuts import (
     render,
@@ -76,7 +78,7 @@ class PostViewSet(viewsets.ViewSet):
             endpos = int(request.GET.get('endpos'))
         if request.GET.get('startpos'):
             startpos = int(request.GET.get('startpos'))
-        serializer = PostSerializer(queryset.order_by("-date")[startpos:endpos], 
+        serializer = PostSerializer(queryset.order_by("-pub_date")[startpos:endpos], 
                                         many=True, context={'request': request})
         return Response(serializer.data)
 
@@ -177,8 +179,22 @@ class PostViewSet(viewsets.ViewSet):
             endpos = int(request.GET.get('endpos'))
         if request.GET.get('startpos'):
             startpos = int(request.GET.get('startpos'))
-        serializer = PostSerializer(queryset.order_by("-date")[startpos:endpos], 
+        serializer = PostSerializer(queryset.order_by("-pub_date")[startpos:endpos], 
                                         many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def get_hot_posts(self, request):
+        self.permission_classes = [AllowAny,]
+        startpos = None
+        endpos = None
+        queryset = Post.objects.filter(pub_date__gte=datetime.now()-timedelta(days=3)).filter(likes__gt = 0)
+        # cuts list of objects
+        if request.GET.get('endpos'):
+            endpos = int(request.GET.get('endpos'))
+        if request.GET.get('startpos'):
+            startpos = int(request.GET.get('startpos'))
+        serializer = PostSerializer(queryset.order_by("likes")[startpos:endpos], 
+                                        many=True, context={'request': request})    
         return Response(serializer.data)
 
 class CommentViewSet(viewsets.ViewSet):
@@ -205,7 +221,7 @@ class CommentViewSet(viewsets.ViewSet):
             endpos = int(request.GET.get('endpos'))
         if request.GET.get('startpos'):
             startpos = int(request.GET.get('startpos'))
-        serializer = CommentSerializer(queryset.order_by("-date")[startpos:endpos], 
+        serializer = CommentSerializer(queryset.order_by("-pub_date")[startpos:endpos], 
                                             many=True, context={'request': request})
         return Response(serializer.data)
     
@@ -277,7 +293,7 @@ class CommentViewSet(viewsets.ViewSet):
             endpos = int(request.GET.get('endpos'))
         if request.GET.get('startpos'):
             startpos = int(request.GET.get('startpos'))
-        serializer = PostSerializer(queryset.order_by("-date")[startpos:endpos], 
+        serializer = PostSerializer(queryset.order_by("-pub_date")[startpos:endpos], 
                                         many=True, context={'request': request})
         return Response(serializer.data)
 

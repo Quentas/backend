@@ -40,6 +40,7 @@ class Account(AbstractUser):
 	def user_likes_count(self):
 		return self.post_like.count() + self.comment_like.count()
 
+
 class Picture(models.Model):
 	image = models.ImageField(upload_to='pictures', blank=False) 
 
@@ -47,21 +48,18 @@ class Picture(models.Model):
 class Post(models.Model):
 	user = models.ForeignKey(Account, on_delete=models.CASCADE)
 	content = models.TextField('content', max_length=400)
-	date = models.DateTimeField(editable=False)
+	pub_date = models.DateTimeField(editable=False)
 	last_edited = models.DateTimeField(editable=False)
 	images = models.ManyToManyField(Picture, related_name='post_images', blank=True)
 	likes = models.ManyToManyField(Account, related_name='post_like', blank=True)
 	bookmark = models.ManyToManyField(Account, related_name='booked_post', blank=True)
-	
-	def recently_published(self):
-		return self.date >= (timezone.now() - datetime.timedelta(days = 1))
 
 	def __str__(self):
 		return self.content
 
 	def save(self, *args, **kwargs):
 		if not self.id:
-			self.date  = timezone.now()
+			self.pub_date  = timezone.now()
 		self.last_edited = timezone.now()
 		return super(Post, self).save(*args, **kwargs)
 
@@ -78,7 +76,7 @@ class Comment(models.Model):
 	post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
 	user = models.ForeignKey(Account, on_delete=models.CASCADE)
 	content = models.TextField('content', max_length=200)
-	date = models.DateTimeField(editable=False)
+	pub_date = models.DateTimeField(editable=False)
 	last_edited = models.DateTimeField(editable=False)
 	images = models.ManyToManyField(Picture, related_name='comment_images', blank=True)
 	parent = models.ForeignKey("self", null=True, blank=True, on_delete=CASCADE)
@@ -91,7 +89,7 @@ class Comment(models.Model):
 
 	def save(self, *args, **kwargs):
 		if not self.id:
-			self.date  = timezone.now()
+			self.pub_date  = timezone.now()
 		self.last_edited = timezone.now()
 		return super(Comment, self).save(*args, **kwargs)
 

@@ -27,6 +27,9 @@ urlpatterns = [
     path("posts/my_bookmarks/", PostViewSet.as_view({
             'get' : 'my_bookmarks',
     })),
+    path("posts/hot/", PostViewSet.as_view({
+            'get' : 'get_hot_posts',
+    })),
 
 
     path("comments/", CommentViewSet.as_view(

@@ -56,7 +56,7 @@ class objSerializer(serializers.ModelSerializer):
     is_booked = SerializerMethodField()
     total_likes = serializers.ReadOnlyField()
     class Meta:
-        fields = ('id', 'user', 'content', 'date', 
+        fields = ('id', 'user', 'content', 'pub_date', 
         'last_edited', 'images', 'comments_count', 'is_fan', 'total_likes', 'is_booked',)
 
     def get_is_fan(self, obj):
@@ -84,7 +84,7 @@ class CommentDetialSerializer(objSerializer):
 class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        model.date = serializers.DateTimeField()
+        model.pub_date = serializers.DateTimeField()
         fields = ["post", "content"]
 
 
@@ -104,7 +104,7 @@ class PostCreateSerializer(serializers.ModelSerializer):
     images = PictureSerializer(many=True)
     class Meta:
         model = Post
-        model.date = serializers.DateTimeField() 
+        model.pub_date = serializers.DateTimeField() 
         fields = ['content', 'images',]
         #fields = ['content',]
 

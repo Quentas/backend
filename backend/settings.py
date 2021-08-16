@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'psycopg2',
     'users',
     'corsheaders',
+    'drf_yasg',
+
 ]
 
 MIDDLEWARE = [

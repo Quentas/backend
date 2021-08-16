@@ -247,8 +247,10 @@ class CommentViewSet(viewsets.ViewSet):
     def partial_update(self, request, pk):
         self.permission_classes = [IsAuthenticated,]
         comment = get_object_or_404(Comment, id=pk)
+        if not request.data['content']:
+            return Response({"Content error" : "No content received"}, status=400)
         if request.user == comment.user:
-            comment.content = request.data["content"]
+            comment.content = request.data['content']
             comment.save()
             return Response(status=200)
         else:

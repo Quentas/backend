@@ -14,13 +14,8 @@ import os, sys
 from datetime import timedelta
 import django_heroku
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'by@m!qdo1!hyzx75$zuyp-#*-#09958x1@4x!bbv6icjw*+w=0'
@@ -40,13 +35,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'djoser',
-    'rest_framework.authtoken',
     'django_filters',
     'psycopg2',
     'users',
     'corsheaders',
     'drf_yasg',
-
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -58,8 +52,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
-
 
 ALLOWED_HOSTS=['*']
 CORS_ORIGIN_ALLOW_ALL = True
@@ -67,7 +61,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 ROOT_URLCONF = 'backend.urls'
 
 #DATETIME_FORMAT = 'N j, Y, P'
-
 
 TEMPLATES = [
     {
@@ -82,6 +75,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',  
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -122,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES' : (
-            'rest_framework.authentication.TokenAuthentication',
+            'rest_framework.authentication.SessionAuthentication',
             'rest_framework_simplejwt.authentication.JWTAuthentication',
         ),
     'DEFAULT_FILTER_BACKENDS' : (
@@ -133,13 +128,29 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = 'users.Account'
 
 
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+SOCIAL_AUTH_RAISE_EXCEPTIONS = False
+
+SESSION_COOKIE_SAMESITE = None
+
+white_list = [
+    'http://localhost:8000/accounts/profile/',
+    'https://fierce-dusk-92502.herokuapp.com/accounts/profile/',
+    'https://react-shitter.herokuapp.com/accounts/profile/'
+]
+
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL' : '#/password/reset/confirm/{uid}/{token}',
     #'USERNAME_RESET_CONFIRM_URL' : '#/username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL' : 'api/v1/activate/{uid}/{token}',
     #'SEND_ACTIVATION_EMAIL' : True,    # ------- UNLOCK WHEN HOSTED 
     'LOGOUT_ON_PASSWORD_CHANGE' : True,
-    #'USER_CREATE_PASSWORD_RETYPE' : True,
 
     'USER_ID_FIELD' : 'username',   # user_id_field allows normal registration and hides user id in url
     'LOGIN_FIELD' : 'email',    #login_field makes it possible to log in with email
@@ -151,49 +162,26 @@ DJOSER = {
     'HIDE_USERS': False,
     'PERMISSIONS': {
         'user': ['rest_framework.permissions.AllowAny'],
-    }
+        'username_reset': ['rest_framework.permissions.IsAdminUser'],
+        'username_reset_confirm': ['rest_framework.permissions.IsAdminUser'],
+        'user_list' : ['rest_framework.permissions.IsAdminUser'],
+    },
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': white_list,
 }
-
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'mailbot.maxim@gmail.com'
-EMAIL_HOST_PASSWORD = 'B1234f_1'
-EMAIL_PORT = 587
-
-'''
-MAILCHIMP_API_KEY = "d734e120952f5ff05372be27b9cbccfd-us1"
-MAILCHIMP_DATA_CENTER = "us1"
-MAILCHIMP_EMAIL_LIST_ID = "582e337829"
-'''
-
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME' : timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME' : timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS' : False,
-    'BLACKLIST_AFTER_ROTATION' : True,
-
-    'ALGHORITHM' : 'HS256',
-    'SIGNING_KEY' : SECRET_KEY,
-    'VERIFYING_KEY' : None,
-    'AUDIENCE' : None,
-    'ISSUER' : None,
-
-    'AUTH_HEADER_TYPES' : ('Bearer',),
-    'USER_ID_FIELD' : 'id',
-    'USER_ID_CLAIM' : 'user_id',
-
-    'AUTH_TOKEN_CLASSES' : ('rest_framework_simplejwt.tokens.AccessToken'),
-    'TOKEN_TYPE_CLAIM' : 'token_type',
-
-    'JTI_CLAIM' : 'jti',
-
-    'SLIDING_TOKEN_REFRESH_EXP_CLAIM' : 'refresh_exp',
-    'SLIDING_TOKEN_LIFETIME' : timedelta(minutes=5),
-    'SLIDING_TOKEN_REFRESH_LIFETIME' : timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
+
+
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', True)
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
 
 
 # Internationalization

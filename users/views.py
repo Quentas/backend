@@ -31,11 +31,6 @@ from rest_framework.permissions import (
 )
 
 from rest_framework.views import APIView
-from rest_framework.authtoken.serializers import AuthTokenSerializer
-from rest_framework.authtoken.models import Token
-
-from django.views.decorators.csrf import csrf_exempt
-
 
 from .models import (
     Post, 
@@ -344,4 +339,24 @@ class UserDataViewSet(viewsets.ViewSet):
             return Response(status=200)
         return Response(status=400)
 
+from django.views import View
+from django.http import JsonResponse
 
+class RedirectSocial(View):
+
+    def get(self, request, *args, **kwargs):
+        code, state = str(request.GET['code']), str(request.GET['state'])
+        json_obj = {'code': code, 'state': state}
+        return JsonResponse(json_obj)
+
+class Logout(APIView):
+    def post(self, request):
+        request.user.auth_token.delete()
+        return Response(status=200)
+
+
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer
+
+class EmailTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

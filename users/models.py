@@ -16,9 +16,15 @@ class Account(AbstractUser):
 	first_name = models.CharField(blank=True, max_length=15, verbose_name='first name')
 	last_name = models.CharField(blank=True, max_length=15, verbose_name='last name')
 
+	USERNAME_FIELD = 'email'
+	REQUIRED_FIELDS = ['username']
+
 	class Meta:
 		verbose_name = 'Account'	
 	
+	def __str__(self):
+		return self.username
+
 	def save(self, *args, **kwargs):
 		# Resizing profile image
 		super().save(*args, **kwargs)

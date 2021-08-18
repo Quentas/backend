@@ -21,7 +21,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from users.views import RedirectSocial, EmailTokenObtainPairView
+from users.views import RedirectSocial, EmailTokenObtainPairView, LogoutView
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -42,7 +42,7 @@ urlpatterns = [
 
     path("token/login/", EmailTokenObtainPairView.as_view(), name="token_obtain_pair"),   #  for auth
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),       
-
+    path("token/logout/", LogoutView.as_view(), name="blacklist_token"),
 
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 

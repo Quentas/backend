@@ -349,14 +349,24 @@ class RedirectSocial(View):
         json_obj = {'code': code, 'state': state}
         return JsonResponse(json_obj)
 
-class Logout(APIView):
-    def post(self, request):
-        request.user.auth_token.delete()
-        return Response(status=200)
-
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer
 
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+
+from rest_framework_simplejwt.tokens import RefreshToken
+
+class LogoutView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=200)
+        except Exception as e:
+            return Response(status=400)

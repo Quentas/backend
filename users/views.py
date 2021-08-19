@@ -362,6 +362,8 @@ class UserDataViewSet(viewsets.ViewSet):
         if not uname:
             return Response(status=400)
         user_instance = get_object_or_404(Account, username=uname)
+        if user_instance == request.user:
+            return Response({"Subscription error" : "You cannot subscribe to yourself"}, status=400)
         if user_instance in request.user.subscribed_to.all():
             request.user.subscribed_to.remove(user_instance)
             return Response(status=204)

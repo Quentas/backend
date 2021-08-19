@@ -15,6 +15,7 @@ class Account(AbstractUser):
 	bio = models.TextField('bio', max_length=200, blank=True)
 	first_name = models.CharField(blank=True, max_length=15, verbose_name='first name')
 	last_name = models.CharField(blank=True, max_length=15, verbose_name='last name')
+	subscribed_to = models.ManyToManyField("self", blank=True, related_name='subscribed_by')
 
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = ['username']

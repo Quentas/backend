@@ -56,14 +56,22 @@ urlpatterns = [
 
     path("profile_photo/", UserDataViewSet.as_view(
         {
-            'post': 'create',
+            'post': 'avatar_upload',
         })),
     path("user_data/", UserDataViewSet.as_view(
         {
-            'put': 'partial_update',
+            'put': 'data_update',
         })),
     path("activate/<uid>/<token>/", UserDataViewSet.as_view({
-            'get' : 'get',
+            'get' : 'activate',
+    })),
+    path("my_subscriptions/", UserDataViewSet.as_view(
+        {
+            'get': 'get_subscriptions',
+    })),
+    path("subscribe/<uname>", UserDataViewSet.as_view(
+        {
+            'post': 'subscribe',
     })),
 
 ]

@@ -296,7 +296,7 @@ class CommentViewSet(viewsets.ViewSet):
 
 class UserDataViewSet(viewsets.ViewSet):
 
-    def get(self, request, uid, token, format = None):
+    def activate(self, request, uid, token, format = None):
         """
         """
         self.permission_classes = [AllowAny,]
@@ -311,7 +311,7 @@ class UserDataViewSet(viewsets.ViewSet):
         else:
             return Response(response.json())
 
-    def create(self, request):
+    def avatar_upload(self, request):
         """Upload `user` avatar
         """
         self.permission_classes = [IsAuthenticated,]
@@ -326,7 +326,7 @@ class UserDataViewSet(viewsets.ViewSet):
         return Response(status=400)
 
 
-    def partial_update(self, request):
+    def data_update(self, request):
         """Update `user` fields `bio`, `first_name` and `last_name`
         """
         self.permission_classes = [IsAuthenticated,]
@@ -338,6 +338,36 @@ class UserDataViewSet(viewsets.ViewSet):
             request.user.save()
             return Response(status=200)
         return Response(status=400)
+
+    def get_subscriptions(self, request):
+        self.permission_classes = [IsAuthenticated,]
+        startpos, endpos = None, None
+        if request.user.is_anonymous:
+            return Response(status=401)
+        if request.user.subscribed_to.count() == 0:
+            return Response({"Subscription error" : "You have no subscriptions yet"}, status=400)
+        queryset = Post.objects.filter(user__in = request.user.subscribed_to.all())
+        if request.GET.get('endpos'):
+            endpos = int(request.GET.get('endpos'))
+        if request.GET.get('startpos'):
+            startpos = int(request.GET.get('startpos'))
+        serializer = PostSerializer(queryset.order_by("-pub_date")[startpos:endpos], 
+                                    many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def subscribe(self, request, uname):
+        self.permission_classes = [IsAuthenticated,]
+        if request.user.is_anonymous:
+            return Response(status=401)
+        if not uname:
+            return Response(status=400)
+        user_instance = get_object_or_404(Account, username=uname)
+        if user_instance in request.user.subscribed_to.all():
+            request.user.subscribed_to.remove(user_instance)
+            return Response(status=204)
+        request.user.subscribed_to.add(user_instance)
+        return Response(status=200)            
+        
 
 from django.views import View
 from django.http import JsonResponse

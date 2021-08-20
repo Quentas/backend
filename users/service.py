@@ -31,6 +31,14 @@ def is_fan(obj, user) -> bool:
         return False
     return obj.likes.filter(username=user).exists()
 
+def is_subscribed(obj, user) -> bool:
+    """
+    Проверяет, подписан ли `user` на `obj`.
+    """
+    if not user.is_authenticated:
+        return False
+    return user.subscribed_to.filter(username=obj).exists()
+
 def is_booked(obj, user) -> bool:
     """
     Проверяет, репостнул ли `user` `obj`.
@@ -53,14 +61,14 @@ def validate_images(images):
     print(images)
     return Response(status=400)
     if len(images) > 6: 
-        return Response({"Image upload error": "Too many images uploaded. Maximum amount is 6"}, status=400)
+        return Response({"detail": "Too many images uploaded. Maximum amount is 6"}, status=400)
     for image in images:  ##  fistly check all images
         print(image)
         print(image.size, end='\n')
         if image.size > 2000000:  ## 2 MB
-            return Response({"Image upload error": "Too big images uploaded. Maximum size is 2 MB"}, status=400)
+            return Response({"detail": "Too big images uploaded. Maximum size is 2 MB"}, status=400)
         if not Path(str(image)).suffix in {'.jpg', '.jpeg', '.png'}:
-            return Response({"Image upload error": "Images of formats jpg, jpeg, png are supported"}, status=400)
+            return Response({"detail": "Images of formats jpg, jpeg, png are supported"}, status=400)
     return True
 
 def is_stored_on_server(image):

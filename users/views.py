@@ -84,19 +84,19 @@ class PostViewSet(viewsets.ViewSet):
         if request.method == 'POST' and request.data['content']:  # check if not empty
             images = request.FILES.getlist('image')
             if len(images) > 6: 
-                return Response({"Image upload error": "Too many images uploaded. Maximum amount is 6"}, status=400)
+                return Response({"detail": "Too many images uploaded. Maximum amount is 6"}, status=400)
             for image in images:  ##  fistly check all images
                 if image.size > 2000000:  ## 2 MB
-                    return Response({"Image upload error": "Too big images uploaded. Maximum size is 2 MB"}, status=400)
+                    return Response({"detail": "Too big images uploaded. Maximum size is 2 MB"}, status=400)
                 if not Path(str(image)).suffix in {'.jpg', '.jpeg', '.png', '.gif'}:
-                    return Response({"Image upload error": "Images of formats jpg, jpeg, png are supported"}, status=400)
+                    return Response({"detail": "Images of formats jpg, jpeg, png are supported"}, status=400)
             post = Post.objects.create(user=request.user, content=request.data['content'])
             for image in images:  
                 img_instance = Picture.objects.create(image=image)
                 post.images.add(img_instance)
             return Response(status=201)
         else:
-            return Response({"Error": "No 'content' field or no POST request"}, status=400)
+            return Response({"detail": "No 'content' field or no POST request"}, status=400)
         #'''
                          
     def retrieve(self, request, pk):
@@ -110,7 +110,7 @@ class PostViewSet(viewsets.ViewSet):
         post = get_object_or_404(Post, id=pk)
         if request.user == post.user:
             if not request.data['content'] or len(request.data['content'])==0:
-                return Response({"Content error": "Post must contain 'content' field"}, status=400)
+                return Response({"detail": "Post must contain 'content' field"}, status=400)
             old_images = post.images.values('id')
             old_images_count = post.images.all().count()
             deleted_imgs_count = 0
@@ -121,12 +121,12 @@ class PostViewSet(viewsets.ViewSet):
                     post.images.get(id=img).delete()
             images = request.FILES.getlist('image')
             if len(images) + old_images_count - deleted_imgs_count > 6: 
-                return Response({"Image upload error": "Too many images uploaded. Maximum amount is 6"}, status=400) 
+                return Response({"detail": "Too many images uploaded. Maximum amount is 6"}, status=400) 
             for image in images:  ##  fistly check all uploaded images
                 if image.size > 2000000:  ## 2 MB
-                    return Response({"Image upload error": "Too big images uploaded. Maximum size is 2 MB"}, status=400)
+                    return Response({"detail": "Too big images uploaded. Maximum size is 2 MB"}, status=400)
                 if not Path(str(image)).suffix in {'.jpg', '.jpeg', '.png', '.gif'}:
-                    return Response({"Image upload error": "Images of formats jpg, jpeg, png are supported"}, status=400)
+                    return Response({"detail": "Images of formats jpg, jpeg, png are supported"}, status=400)
             post.content = request.data['content']
             for image in images:  
                 img_instance = Picture.objects.create(image=image)
@@ -243,7 +243,7 @@ class CommentViewSet(viewsets.ViewSet):
         self.permission_classes = [IsAuthenticated,]
         comment = get_object_or_404(Comment, id=pk)
         if not request.data['content']:
-            return Response({"Content error" : "No content received"}, status=400)
+            return Response({"detail" : "No content received"}, status=400)
         if request.user == comment.user:
             comment.content = request.data['content']
             comment.save()
@@ -317,7 +317,7 @@ class UserDataViewSet(viewsets.ViewSet):
         self.permission_classes = [IsAuthenticated,]
         self.serializer_class = FileUploadSerializer
         if not request.FILES.getlist('photo'):
-            return Response({"Image upload error" : "Image must be uploaded"}, status=400)            
+            return Response({"detail" : "Image must be uploaded"}, status=400)            
         file_uploaded = request.FILES.getlist('photo')[0]
         if Path(str(file_uploaded)).suffix in {'.jpg', '.jpeg', '.png'}:
             request.user.profile_photo = file_uploaded
@@ -345,7 +345,7 @@ class UserDataViewSet(viewsets.ViewSet):
         if request.user.is_anonymous:
             return Response(status=401)
         if request.user.subscribed_to.count() == 0:
-            return Response({"Subscription error" : "You have no subscriptions yet"}, status=400)
+            return Response({"detail" : "You have no subscriptions yet"}, status=400)
         queryset = Post.objects.filter(user__in = request.user.subscribed_to.all())
         if request.GET.get('endpos'):
             endpos = int(request.GET.get('endpos'))
@@ -363,7 +363,7 @@ class UserDataViewSet(viewsets.ViewSet):
             return Response(status=400)
         user_instance = get_object_or_404(Account, username=uname)
         if user_instance == request.user:
-            return Response({"Subscription error" : "You cannot subscribe to yourself"}, status=400)
+            return Response({"detail" : "You cannot subscribe to yourself"}, status=400)
         if user_instance in request.user.subscribed_to.all():
             request.user.subscribed_to.remove(user_instance)
             return Response(status=204)

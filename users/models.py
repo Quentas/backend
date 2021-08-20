@@ -15,7 +15,7 @@ class Account(AbstractUser):
 	bio = models.TextField('bio', max_length=200, blank=True)
 	first_name = models.CharField(blank=True, max_length=15, verbose_name='first name')
 	last_name = models.CharField(blank=True, max_length=15, verbose_name='last name')
-	subscribed_to = models.ManyToManyField("self", blank=True, related_name='subscribed_by')
+	subscribed_to = models.ManyToManyField("self", blank=True, related_name='subscribed_by', symmetrical=False)
 
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = ['username']
@@ -47,6 +47,13 @@ class Account(AbstractUser):
 	def user_likes_count(self):
 		return self.post_like.count() + self.comment_like.count()
 
+	@property
+	def following_count(self):
+		return self.subscribed_to.count()
+	
+	@property
+	def followers_count(self):
+		return Account.objects.filter(subscribed_to__username = self.username).count()
 
 class Picture(models.Model):
 	image = models.ImageField(upload_to='pictures', blank=False) 

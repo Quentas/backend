@@ -1,6 +1,6 @@
 from django.db.migrations.operations import fields
 from rest_framework.fields import SerializerMethodField
-from users.service import is_booked, is_fan
+from users.service import is_booked, is_fan, is_subscribed
 from rest_framework import serializers
 
 from djoser.serializers import UserCreateSerializer as BaseUserRegistrationSerializer
@@ -24,10 +24,18 @@ class PartialUserSerializer(objUserSerializer):
     user_posts_count = serializers.ReadOnlyField()
     user_comments_count = serializers.ReadOnlyField()
     user_likes_count = serializers.ReadOnlyField()
+    following_count = serializers.ReadOnlyField()
+    followers_count = serializers.ReadOnlyField()
+    is_subscribed = SerializerMethodField()
     class Meta:
         model = Account
-        fields = objUserSerializer.Meta.fields + ('bio', 'user_posts_count', 'user_comments_count', 'user_likes_count',)
+        fields = objUserSerializer.Meta.fields + ('bio', 'user_posts_count', 'user_comments_count', 
+                        'user_likes_count', 'following_count', 'followers_count', 'is_subscribed',)
         read_only_fields = fields        
+        
+    def get_is_subscribed(self, obj):
+        user = self.context['request'].user
+        return is_subscribed(obj, user)
 
 
 class DetailUserSerializer(serializers.ModelSerializer):

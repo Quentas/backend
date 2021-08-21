@@ -143,6 +143,7 @@ SESSION_COOKIE_SAMESITE = None
 white_list = [
     'http://localhost:8000/accounts/profile/',
     'https://fierce-dusk-92502.herokuapp.com/accounts/profile/',
+    'https://fierce-dusk-92502.herokuapp.com/accounts/profile',
     'https://react-shitter.herokuapp.com/accounts/profile/'
 ]
 

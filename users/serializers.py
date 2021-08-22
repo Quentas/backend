@@ -146,3 +146,8 @@ class CustomTokenObtainPairSerializer(EmailTokenObtainSerializer):
         data["access"] = str(refresh.access_token)
         
         return data
+
+
+class SocialAuthSerializer(serializers.Serializer):
+    class Meta:
+        fields = ('email', 'id_token', 'username', 'provider',)

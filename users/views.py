@@ -1,33 +1,13 @@
 from datetime import date, datetime, timedelta
-import json
-from os import stat
 from pathlib import Path
-from django.http.response import HttpResponse
-from django.utils import timezone
 import requests
-from django.shortcuts import (
-    render,
-    get_object_or_404,
-)
-from django.http import (
-    HttpRequest,
-    HttpResponseRedirect,
-)
-
-from django.contrib.auth import login
-
-from rest_framework import (
-    generics, 
-    permissions,
-    viewsets, 
-    serializers,
-)
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponseRedirect
+from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import (
     IsAuthenticated,
     AllowAny,
-    IsAdminUser,
 )
 
 from rest_framework.views import APIView
@@ -37,22 +17,25 @@ from .models import (
     Comment, 
     Account,
     Picture,
-    
 )
 
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.views import View
+from django.http import JsonResponse
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 from .serializers import (
-    DetailUserSerializer,
     PostSerializer, 
     PostDetailSerializer,
-    PostCreateSerializer,
     CommentCreateSerializer,
     CommentSerializer,
     CommentDetialSerializer,
     FileUploadSerializer,
-    PictureSerializer,
     UserDataUpdateSerializer,
+    SocialAuthSerializer,
+    CustomTokenObtainPairSerializer
 )
-from .service import is_stored_on_server as is_stored, modify_input_for_multiple_files as modify
+from .service import password_generate
 
 
 class PostViewSet(viewsets.ViewSet):
@@ -192,6 +175,7 @@ class PostViewSet(viewsets.ViewSet):
                                         many=True, context={'request': request})    
         return Response(serializer.data)
 
+
 class CommentViewSet(viewsets.ViewSet):
 
     def list(self, request):
@@ -294,6 +278,7 @@ class CommentViewSet(viewsets.ViewSet):
                                         many=True, context={'request': request})
         return Response(serializer.data)
 
+
 class UserDataViewSet(viewsets.ViewSet):
 
     def activate(self, request, uid, token, format = None):
@@ -371,9 +356,6 @@ class UserDataViewSet(viewsets.ViewSet):
         return Response(status=200)            
         
 
-from django.views import View
-from django.http import JsonResponse
-
 class RedirectSocial(View):
 
     def get(self, request, *args, **kwargs):
@@ -382,14 +364,9 @@ class RedirectSocial(View):
         return JsonResponse(json_obj)
 
 
-from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import CustomTokenObtainPairSerializer
-
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
-
-from rest_framework_simplejwt.tokens import RefreshToken
 
 class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -402,3 +379,37 @@ class LogoutView(APIView):
             return Response(status=200)
         except Exception as e:
             return Response(status=400)
+
+
+class SocialLogin(viewsets.ViewSet):
+
+    def create(self, request):
+        serializer = SocialAuthSerializer(data=request.data)
+        if serializer.is_valid():
+            if not request.data['id_token'] or not request.data['username'] or not request.data['email']:
+                return Response({"detail" : "SOSI"}, status=400)
+            if Account.objects.filter(id_token = request.data['id_token']).count() > 0:
+                return Response({"detail" : "User with this id_token already exists"}, status=400)
+            if Account.objects.filter(email = request.data['email']).count() > 0:
+                return Response({"detail" : "User with this email already exists"}, status=400)
+            if Account.objects.filter(username = request.data['username']).count() > 0:
+                return Response({"detail" : "User with username '{}' already exists".format(request.data['username'])}, status=400)      
+            generated_password = password_generate(20)
+            user = Account.objects.create(  username = request.data['username'],
+                                            email = request.data['email'],
+                                            id_token = request.data['id_token'],
+                                        )
+            user.set_password(generated_password)
+            user.save()
+            return Response(status=200)
+        return Response(serializer.data, status=400)
+
+    def log_in(self, request):
+        if not request.data['id_token'] or not request.data['email']:
+            return Response({"detail" : "SOSI"}, status=400)
+        if Account.objects.filter(id_token = request.data['id_token']).filter(email=request.data['email']).count() > 0:
+            queryset = Account.objects.filter(id_token = request.data['id_token'])
+            user = queryset.get(email=request.data['email'])
+            refresh = RefreshToken.for_user(user)
+            return JsonResponse({"refresh" : str(refresh)}, status=200)
+        return Response({"detail": "No account with provided data"}, status=400)

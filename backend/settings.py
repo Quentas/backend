@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'users',
     'corsheaders',
     'drf_yasg',
-    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -76,8 +75,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'social_django.context_processors.backends',  
-                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -134,19 +131,6 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
-SOCIAL_AUTH_RAISE_EXCEPTIONS = False
-SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
-SESSION_COOKIE_SAMESITE = None
-
-white_list = [
-    'http://localhost:8000/accounts/profile/',
-    'https://fierce-dusk-92502.herokuapp.com/accounts/profile/',
-    'https://fierce-dusk-92502.herokuapp.com/accounts/profile',
-    'https://react-shitter.herokuapp.com/accounts/profile/'
-]
-
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL' : '#/password/reset/confirm/{uid}/{token}',
     #'USERNAME_RESET_CONFIRM_URL' : '#/username/reset/confirm/{uid}/{token}',
@@ -168,7 +152,6 @@ DJOSER = {
         'username_reset_confirm': ['rest_framework.permissions.IsAdminUser'],
         'user_list' : ['rest_framework.permissions.IsAdminUser'],
     },
-    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': white_list,
 }
 
 

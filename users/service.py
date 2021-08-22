@@ -4,6 +4,7 @@ from .models import Post, Account, Picture
 from django.contrib.contenttypes.models import ContentType
 from rest_framework.response import Response
 from pathlib import Path
+import random, string
 
 class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):
     pass
@@ -14,13 +15,6 @@ class PostFilter(filters.FilterSet):
     class Meta:
         model = Post
         fields = ['user']
-
-
-def modify_input_for_multiple_files(property_id, image):
-    dict = {}
-    dict['property_id'] = property_id
-    dict['image'] = image
-    return dict
 
 
 def is_fan(obj, user) -> bool:
@@ -71,8 +65,7 @@ def validate_images(images):
             return Response({"detail": "Images of formats jpg, jpeg, png are supported"}, status=400)
     return True
 
-def is_stored_on_server(image):
-    try:
-        return image.startswith('http://127.0.0.1:8000/media/pictures/') or image.startswith('https://fierce-dusk-92502.herokuapp.com/media/pictures/')
-    except:
-        return False
+def password_generate(length):
+    all = string.ascii_letters + string.digits
+    password = "".join(random.sample(all,length))
+    return password

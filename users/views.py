@@ -168,6 +168,9 @@ class CommentViewSet(viewsets.ViewSet):
         # /comments/?post_id=1
         if request.GET.get('post_id'):
             queryset = queryset.filter(post__id=request.GET.get('post_id'))
+        # /comments/?liked_by=admin
+        if request.GET.get('liked_by'):
+            queryset = queryset.filter(likes__username=request.GET.get('liked_by'))
         # /comments/?parent_id=1
         if request.GET.get('parent_id'):
             if request.GET.get('parent_id') == 'null':
@@ -246,9 +249,9 @@ class CommentViewSet(viewsets.ViewSet):
         queryset = request.user.booked_comment.all()
         endpos = int(request.GET.get('endpos')) if request.GET.get('endpos') else None
         startpos = int(request.GET.get('startpos')) if request.GET.get('startpos') else None
-        serializer = PostSerializer(queryset.order_by("-pub_date")[startpos:endpos],
-                                    many=True, context={'request': request}
-                                    )
+        serializer = CommentSerializer(queryset.order_by("-pub_date")[startpos:endpos],
+                                       many=True, context={'request': request}
+                                       )
         return Response(serializer.data)
 
 

@@ -1,12 +1,13 @@
 from django.db.migrations.operations import fields
+
 from rest_framework.fields import SerializerMethodField
-from users.service import is_booked, is_fan, is_subscribed
+from rest_framework_simplejwt.serializers import TokenObtainSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import serializers
 
-from djoser.serializers import UserCreateSerializer as BaseUserRegistrationSerializer
-
+from users.service import is_booked, is_fan, is_subscribed
 from .models import (
-    Account, 
+    Account,
     Post,
     Comment,
     Picture
@@ -16,7 +17,7 @@ from .models import (
 class objUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ('username', 'profile_photo' ,'first_name', 'last_name',)
+        fields = ('username', 'profile_photo', 'first_name', 'last_name', )
         read_only_fields = fields
 
 
@@ -27,12 +28,14 @@ class PartialUserSerializer(objUserSerializer):
     following_count = serializers.ReadOnlyField()
     followers_count = serializers.ReadOnlyField()
     is_subscribed = SerializerMethodField()
+
     class Meta:
         model = Account
-        fields = objUserSerializer.Meta.fields + ('bio', 'user_posts_count', 'user_comments_count', 
-                        'user_likes_count', 'following_count', 'followers_count', 'is_subscribed',)
-        read_only_fields = fields        
-        
+        fields = objUserSerializer.Meta.fields + (
+            'bio', 'user_posts_count', 'user_comments_count', 'user_likes_count',
+            'following_count', 'followers_count', 'is_subscribed',)
+        read_only_fields = fields
+
     def get_is_subscribed(self, obj):
         user = self.context['request'].user
         return is_subscribed(obj, user)
@@ -54,7 +57,7 @@ class PictureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Picture
         fields = ('id', 'image',)
-        
+
 
 class objSerializer(serializers.ModelSerializer):
     images = PictureSerializer(many=True)
@@ -63,9 +66,10 @@ class objSerializer(serializers.ModelSerializer):
     is_fan = SerializerMethodField()
     is_booked = SerializerMethodField()
     total_likes = serializers.ReadOnlyField()
+
     class Meta:
-        fields = ('id', 'user', 'content', 'pub_date', 
-        'last_edited', 'images', 'comments_count', 'is_fan', 'total_likes', 'is_booked',)
+        fields = ('id', 'user', 'content', 'pub_date', 'last_edited',
+                  'images', 'comments_count', 'is_fan', 'total_likes', 'is_booked',)
 
     def get_is_fan(self, obj):
         user = self.context['request'].user
@@ -74,7 +78,6 @@ class objSerializer(serializers.ModelSerializer):
     def get_is_booked(self, obj):
         user = self.context['request'].user
         return is_booked(obj, user)
-    
 
 
 class CommentSerializer(objSerializer):
@@ -107,27 +110,22 @@ class PostDetailSerializer(objSerializer):
         model = Post
         fields = objSerializer.Meta.fields
 
-    
-class PostCreateSerializer(serializers.ModelSerializer): 
+
+class PostCreateSerializer(serializers.ModelSerializer):
     images = PictureSerializer(many=True)
+
     class Meta:
         model = Post
-        model.pub_date = serializers.DateTimeField() 
-        fields = ['content', 'images',]
-        #fields = ['content',]
-
-    ## write create method and _validateImages_ method
+        model.pub_date = serializers.DateTimeField()
+        fields = ['content', 'images', ]
 
 
 class FileUploadSerializer(serializers.Serializer):
     file_uploaded = serializers.FileField()
+
     class Meta:
         fields = ['file_uploaded']
 
-
-
-from rest_framework_simplejwt.serializers import TokenObtainSerializer
-from rest_framework_simplejwt.tokens import RefreshToken
 
 class EmailTokenObtainSerializer(TokenObtainSerializer):
     username_field = Account.EMAIL_FIELD
@@ -141,10 +139,8 @@ class CustomTokenObtainPairSerializer(EmailTokenObtainSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
         refresh = self.get_token(self.user)
-
         data["refresh"] = str(refresh)
         data["access"] = str(refresh.access_token)
-        
         return data
 
 

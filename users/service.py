@@ -1,20 +1,14 @@
-from django.http import response
-from django_filters import rest_framework as filters
-from .models import Post, Account, Picture
-from django.contrib.contenttypes.models import ContentType
-from rest_framework.response import Response
 from pathlib import Path
-import random, string
+import random
+import string
 
-class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):
-    pass
+from django.http import JsonResponse
+from django_filters import rest_framework as filters
+from django.contrib.contenttypes.models import ContentType
 
-class PostFilter(filters.FilterSet):
-    user = CharFilterInFilter(field_name="username", lookup_expr="iexact")
+from rest_framework.response import Response
 
-    class Meta:
-        model = Post
-        fields = ['user']
+from .models import Account
 
 
 def is_fan(obj, user) -> bool:
@@ -25,6 +19,7 @@ def is_fan(obj, user) -> bool:
         return False
     return obj.likes.filter(username=user).exists()
 
+
 def is_subscribed(obj, user) -> bool:
     """
     Проверяет, подписан ли `user` на `obj`.
@@ -32,6 +27,7 @@ def is_subscribed(obj, user) -> bool:
     if not user.is_authenticated:
         return False
     return user.subscribed_to.filter(username=obj).exists()
+
 
 def is_booked(obj, user) -> bool:
     """
@@ -52,20 +48,17 @@ def get_fans(obj):
 
 
 def validate_images(images):
-    print(images)
-    return Response(status=400)
-    if len(images) > 6: 
+    if len(images) > 6:
         return Response({"detail": "Too many images uploaded. Maximum amount is 6"}, status=400)
-    for image in images:  ##  fistly check all images
-        print(image)
-        print(image.size, end='\n')
+    for image in images:
         if image.size > 2000000:  ## 2 MB
             return Response({"detail": "Too big images uploaded. Maximum size is 2 MB"}, status=400)
-        if not Path(str(image)).suffix in {'.jpg', '.jpeg', '.png'}:
+        if not Path(str(image)).suffix in {'.jpg', '.jpeg', '.png', '.gif'}:
             return Response({"detail": "Images of formats jpg, jpeg, png are supported"}, status=400)
     return True
 
+
 def password_generate(length):
     all = string.ascii_letters + string.digits
-    password = "".join(random.sample(all,length))
+    password = "".join(random.sample(all, length))
     return password

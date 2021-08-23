@@ -30,3 +30,6 @@ venv.bak/
 #static
 #staticfiles
 proj_db
+5.png
+db.sqlite3
+db.sqlite3

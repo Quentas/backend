@@ -24,7 +24,8 @@ class objUserSerializer(serializers.ModelSerializer):
 class PartialUserSerializer(objUserSerializer):
     user_posts_count = serializers.ReadOnlyField()
     user_comments_count = serializers.ReadOnlyField()
-    user_likes_count = serializers.ReadOnlyField()
+    user_post_likes_count = serializers.ReadOnlyField()
+    user_comment_likes_count = serializers.ReadOnlyField()
     following_count = serializers.ReadOnlyField()
     followers_count = serializers.ReadOnlyField()
     is_subscribed = SerializerMethodField()
@@ -32,8 +33,8 @@ class PartialUserSerializer(objUserSerializer):
     class Meta:
         model = Account
         fields = objUserSerializer.Meta.fields + (
-            'bio', 'user_posts_count', 'user_comments_count', 'user_likes_count',
-            'following_count', 'followers_count', 'is_subscribed',)
+            'bio', 'user_posts_count', 'user_comments_count', 'user_post_likes_count',
+            'user_comment_likes_count', 'following_count', 'followers_count', 'is_subscribed',)
         read_only_fields = fields
 
     def get_is_subscribed(self, obj):

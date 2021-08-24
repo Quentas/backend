@@ -44,8 +44,12 @@ class Account(AbstractUser):
         return Comment.objects.filter(user__username=self.username).count()
 
     @property
-    def user_likes_count(self):
-        return self.post_like.count() + self.comment_like.count()
+    def user_post_likes_count(self):
+        return self.post_like.count()
+    
+    @property
+    def user_comment_likes_count(self):
+        return self.comment_like.count()
 
     @property
     def following_count(self):

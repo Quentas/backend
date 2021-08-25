@@ -116,7 +116,6 @@ AUTH_USER_MODEL = 'users.Account'
 
 
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 

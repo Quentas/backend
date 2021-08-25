@@ -1,6 +1,7 @@
 from datetime import date, datetime, timedelta
 from pathlib import Path
 import requests
+from random import sample
 
 from django.views import View
 from django.shortcuts import get_object_or_404
@@ -31,7 +32,8 @@ from .serializers import (
     FileUploadSerializer,
     UserDataUpdateSerializer,
     SocialAuthSerializer,
-    CustomTokenObtainPairSerializer
+    CustomTokenObtainPairSerializer,
+    objUserSerializer
 )
 from .service import password_generate, validate_images
 
@@ -322,6 +324,20 @@ class UserDataViewSet(viewsets.ViewSet):
         request.user.subscribed_to.add(user_instance)
         return Response(status=200)
 
+    def suggestions(self, request):
+        self.permission_classes = [IsAuthenticated, ]
+        if request.user.is_anonymous:
+            return Response(status=401)
+        if request.user.subscribed_to.count() <= 3:
+            queryset = sample(list(Account.objects.all()), 3)
+            serializer = objUserSerializer(queryset, many=True)
+            return Response(serializer.data)
+        your_subscriptions = request.user.subscribed_to.all()
+        your_subscription_sibscribers = Account.objects.filter(
+            subscribed_to__in = your_subscriptions).exclude(id=request.user.id)
+        queryset = sample(list(your_subscription_sibscribers), 3)
+        serializer = objUserSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer

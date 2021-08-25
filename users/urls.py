@@ -74,5 +74,8 @@ urlpatterns = [
         {
             'post': 'subscribe',
     })),
-
+    path("suggestions/", UserDataViewSet.as_view(
+        {
+            'get': 'suggestions',
+    })),
 ]

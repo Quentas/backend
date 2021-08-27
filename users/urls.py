@@ -1,32 +1,81 @@
+from django.contrib.auth.models import User
 from django.urls import path
+
 from .views import (
     PostViewSet,
     CommentViewSet,
-    UploadViewSet,
-    ActivateUser,
+    UserDataViewSet,
 )
+
 
 urlpatterns = [
     path("posts/", PostViewSet.as_view(
         {
             'get': 'list',
             'post': 'create',
-            'put': 'partial_update',
-            'delete': 'destroy'
         })),
     path("posts/<pk>", PostViewSet.as_view({
             'get' : 'retrieve',
+            'put': 'partial_update',
+            'delete': 'destroy',
     })),
+    path("posts/<pk>/like/", PostViewSet.as_view({
+            'post' : 'like',
+    })),
+    path("posts/<pk>/bookmark/", PostViewSet.as_view({
+            'post' : 'bookmark',
+    })),
+    path("posts/my_bookmarks/", PostViewSet.as_view({
+            'get' : 'my_bookmarks',
+    })),
+    path("posts/hot/", PostViewSet.as_view({
+            'get' : 'get_hot_posts',
+    })),
+
+
     path("comments/", CommentViewSet.as_view(
         {
             'get': 'list',
             'post': 'create',
+        })),
+    path("comments/<pk>", CommentViewSet.as_view(
+        {
+            'get' : 'retrieve',
             'put': 'partial_update',
             'delete': 'destroy'
         })),
-    path("profile_photo/", UploadViewSet.as_view(
+    path("comments/<pk>/like/", CommentViewSet.as_view({
+            'post' : 'like',
+    })),
+    path("comments/<pk>/bookmark/", CommentViewSet.as_view({
+            'post' : 'bookmark',
+    })),
+    path("comments/my_bookmarks/", CommentViewSet.as_view({
+            'get' : 'my_bookmarks',
+    })),
+
+
+    path("profile_photo/", UserDataViewSet.as_view(
         {
-            'post': 'create',
+            'post': 'avatar_upload',
         })),
-    path("activate/<uid>/<token>/", ActivateUser.as_view()),
+    path("user_data/", UserDataViewSet.as_view(
+        {
+            'put': 'data_update',
+        })),
+    path("activate/<uid>/<token>/", UserDataViewSet.as_view({
+            'get' : 'activate',
+    })),
+    path("my_subscriptions/", UserDataViewSet.as_view(
+        {
+            'get': 'get_subscriptions',
+    })),
+    path("subscribe/<uname>", UserDataViewSet.as_view(
+        {
+            'post': 'subscribe',
+    })),
+    path("suggestions/", UserDataViewSet.as_view(
+        {
+            'get': 'suggestions',
+    })),
 ]

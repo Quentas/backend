@@ -31,6 +31,9 @@ urlpatterns = [
     path("posts/hot/", PostViewSet.as_view({
             'get' : 'get_hot_posts',
     })),
+    path("posts/listener/", PostViewSet.as_view({
+            'post' : 'listener',
+    })),
 
 
     path("comments/", CommentViewSet.as_view(

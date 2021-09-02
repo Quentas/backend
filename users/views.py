@@ -158,6 +158,14 @@ class PostViewSet(viewsets.ViewSet):
                                     many=True, context={'request': request})
         return Response(serializer.data)
 
+    def listener(self, request):
+        self.permission_classes = [AllowAny, ]
+        if not request.data['last_id'] or len(request.data['last_id']) == 0:
+            return Response({'detail': 'last_id must be a number'}, status=400)
+        last_id = request.data['last_id']
+        new_posts = Post.objects.filter(id__gt=last_id).count()
+        return Response({'new_posts': new_posts}, status=200)
+
 
 class CommentViewSet(viewsets.ViewSet):
 
